@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +6,7 @@
 
 @font-face {
     font-family: 'Arimo';
-    src: './fonts/Arimo/Arimo-Italic-VariableFont_wght.ttf', url('./fonts/Arimo/Arimo-VariableFont_wght.ttf');
+    src: url('./fonts/Arimo/Arimo-VariableFont_wght.ttf'), url('./fonts/Arimo/Arimo-Italic-VariableFont_wght.ttf');
 }
 
 @font-face {
@@ -14,16 +15,23 @@
 }
 
 body {
+    font-family: Arimo;
     display: grid;
     grid-template-columns: 1fr 4fr;
-    grid-template-rows: 1fr 5fr;
+    grid-template-rows: 1fr 9fr;
     height: 100vh;
 }
 
 header {
-    background-color: yellow;
+    background-color: white;
     grid-column: 2;
     grid-row: 1;
+}
+
+h1 {
+    font-family: Lobster;
+    font-size: 58px;
+    text-align: center;
 }
 
 nav {
@@ -33,7 +41,7 @@ nav {
 }
 
 #content {
-    background-color: blueviolet;
+    background-color: mintcream;
     grid-column: 2;
     grid-row: 2;
 
