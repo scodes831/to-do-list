@@ -3,8 +3,39 @@
     padding: 0;
 }
 
+@font-face {
+    font-family: 'Arimo';
+    src: './fonts/Arimo/Arimo-Italic-VariableFont_wght.ttf', url('./fonts/Arimo/Arimo-VariableFont_wght.ttf');
+}
+
+@font-face {
+    font-family: 'Lobster';
+    src: url('./fonts/Lobster/Lobster-Regular.ttf');
+}
+
 body {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: 10% auto;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 1fr 5fr;
+    height: 100vh;
 }
+
+header {
+    background-color: yellow;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+nav {
+    background-color: pink;
+    grid-column: 1;
+    grid-row: 1 / 3;
+}
+
+#content {
+    background-color: blueviolet;
+    grid-column: 2;
+    grid-row: 2;
+
+}
+
