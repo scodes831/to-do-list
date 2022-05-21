@@ -23,7 +23,7 @@ body {
 }
 
 header {
-    background-color: white;
+    background-color: #6ec0de;
     grid-column: 2;
     grid-row: 1;
 }
@@ -35,7 +35,7 @@ h1 {
 }
 
 nav {
-    background-color: lightcoral;
+    background-color: #dbf1f9;
     grid-column: 1;
     grid-row: 1 / 3;
 }
@@ -74,7 +74,8 @@ li:not(:last-child) {
 }
 
 #content {
-    background-color: lightgray;
+    background-image: url('./images/penguins.png');
+    background-size: cover;
     grid-column: 2;
     grid-row: 2;
     display: flex;
@@ -88,7 +89,7 @@ li:not(:last-child) {
 }
 
 #new-task, #new-project {
-    background-color: darkcyan;
+    background-color: #dbf1f9;
     margin: 40px 60px 80px;
     max-height: 125px;
     width: 175px;
