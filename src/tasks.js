@@ -69,5 +69,19 @@ export function addTaskForm() {
     taskFormProjectInput.setAttribute('name', 'task-project');
     taskForm.appendChild(taskFormProjectInput);
 
+    const taskBtnContainer = document.createElement('div');
+    taskBtnContainer.setAttribute('id', 'task-button-container');
+    taskForm.appendChild(taskBtnContainer);
+
+    const taskSubmitBtn = document.createElement('button');
+    taskSubmitBtn.setAttribute('id', 'submit-task');
+    taskSubmitBtn.textContent = "Submit";
+    taskBtnContainer.appendChild(taskSubmitBtn);
+
+    const taskCancelBtn = document.createElement('button');
+    taskCancelBtn.setAttribute('id', 'cancel-task');
+    taskCancelBtn.textContent = "Cancel";
+    taskBtnContainer.appendChild(taskCancelBtn);
+
 }
 
