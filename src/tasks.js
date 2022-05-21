@@ -60,6 +60,21 @@ export function addTaskForm() {
     taskFormPriorityInput.setAttribute('name', 'task-priority');
     taskForm.appendChild(taskFormPriorityInput);
 
+    const taskFormPriorityLow = document.createElement('option');
+    taskFormPriorityLow.setAttribute('value', 'low');
+    taskFormPriorityLow.textContent = "Low";
+    taskFormPriorityInput.appendChild(taskFormPriorityLow);
+
+    const taskFormPriorityMed = document.createElement('option');
+    taskFormPriorityMed.setAttribute('value', 'medium');
+    taskFormPriorityMed.textContent = "Medium";
+    taskFormPriorityInput.appendChild(taskFormPriorityMed);
+
+    const taskFormPriorityHigh = document.createElement('option');
+    taskFormPriorityHigh.setAttribute('value', 'high');
+    taskFormPriorityHigh.textContent = "High";
+    taskFormPriorityInput.appendChild(taskFormPriorityHigh);
+
     const taskFormProjectLabel = document.createElement('label')
     taskFormProjectLabel.setAttribute('for', 'task-project');
     taskFormProjectLabel.textContent = "Associated with Project:";
@@ -68,6 +83,11 @@ export function addTaskForm() {
     const taskFormProjectInput = document.createElement('select');
     taskFormProjectInput.setAttribute('name', 'task-project');
     taskForm.appendChild(taskFormProjectInput);
+
+    const taskFormProjectTest = document.createElement('option');
+    taskFormProjectTest.setAttribute('value', 'test-project');
+    taskFormProjectTest.textContent = "Test Project";
+    taskFormProjectInput.appendChild(taskFormProjectTest);
 
     const taskBtnContainer = document.createElement('div');
     taskBtnContainer.setAttribute('id', 'task-button-container');
