@@ -12,16 +12,27 @@
     </header>
     <nav>
         <ul id="nav-links-container">
-            <li class="nav-link home">Home</li>
-            <li class="nav-link today">Due Today</li>
-            <li class="nav-link this-week">Due This Week</li>
-            <li class="nav-link this-month">Due This Month</li>
-            <li class="nav-link all-tasks">All Tasks</li>
-            <li class="nav-link my-projects">My Projects</li>
+            <li id="group-one" class="nav-links home">Home</li>
+            <li id="group-two" class="nav-links">Upcoming Tasks</li>
+                <ul id="group-two-container">
+                    <li class="due-today">Due Today</li>
+                    <li class="due-today num" id="num-due-today">5</li>
+                    <li class="due-this-week">Due This Week</li>
+                    <li class="due-this-week num" id="num-due-this-week">12</li>
+                    <li class="due-this-month">Due This Month</li>
+                    <li class="due-this-month num" id="num-due-this-month">23</li>
+                </ul>
+            <li id="group-three" class="nav-links">My Stuff</li>
+                <ul id="group-three-container">
+                    <li class="all-tasks">All Tasks</li>
+                    <li class="all-tasks num" id="num-all-tasks">32</li>
+                    <li class="my-projects">My Projects</li>
+                    <li class="my-projects num" id="num-my-projects">4</li>
+                </ul>
         </ul>
     </nav>
     <section id="content">
-        <div class="new-container">
+        <div id="content-container">
             <div id="new-task">
                 <div class="new-text">
                     <h2>New Task</h2>
