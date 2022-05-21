@@ -114,10 +114,16 @@ button {
     background-color: white;
 }
 
+#task-form-container {
+    margin: 50px 0 0 0;
+    background-color: rgba(219, 241, 249, .8);
+    border-radius: 8px;
+    padding: 28px;
+    min-height: 50vh;
+    min-width: 400px;
+}
 
-
-
-
-
-
-
+#task-form {
+    display: flex;
+    flex-direction: column;
+}
