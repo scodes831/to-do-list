@@ -5,7 +5,7 @@ const newProjectDiv = document.getElementById('new-project');
 export function removeNewDivs() {
     newTaskDiv.style.display = "none";
     newProjectDiv.style.display = "none"
-}
+};
 
 export function addTaskForm() {
     const taskFormContainer = document.createElement('div');
@@ -95,13 +95,19 @@ export function addTaskForm() {
 
     const taskSubmitBtn = document.createElement('button');
     taskSubmitBtn.setAttribute('id', 'submit-task');
+    taskSubmitBtn.setAttribute('type', 'button');
     taskSubmitBtn.textContent = "Submit";
     taskBtnContainer.appendChild(taskSubmitBtn);
 
     const taskCancelBtn = document.createElement('button');
     taskCancelBtn.setAttribute('id', 'cancel-task');
+    taskCancelBtn.setAttribute('type', 'button');
     taskCancelBtn.textContent = "Cancel";
     taskBtnContainer.appendChild(taskCancelBtn);
-
-}
+    taskCancelBtn.addEventListener('click', e => {
+        taskFormContainer.style.display = "none";
+        newTaskDiv.style.display = "flex";
+        newProjectDiv.style.display = "flex";
+    })
+};
 
