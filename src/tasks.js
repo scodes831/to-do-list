@@ -1,113 +1,126 @@
-const container = document.getElementById('content-container');
-const newTaskDiv = document.getElementById('new-task');
-const newProjectDiv = document.getElementById('new-project');
+const tasksContainer = document.createElement('div');
+tasksContainer.setAttribute('id', 'tasks-card-container');
+let taskList = [];
 
-export function removeNewDivs() {
-    newTaskDiv.style.display = "none";
-    newProjectDiv.style.display = "none"
-};
+class Task {
+    constructor(name, dueDate, desc, priority, assocProj) {
+        this.name = name,
+        this.dueDate = dueDate,
+        this.desc = desc,
+        this.priority = priority,
+        this.assocProj = assocProj
+    }
 
-export function addTaskForm() {
-    const taskFormContainer = document.createElement('div');
-    taskFormContainer.setAttribute('id', 'task-form-container');
-    container.appendChild(taskFormContainer);
+    showTask() {
+        console.log(this.name, this.dueDate, this.desc, this.priority, this.assocProj)
+    }
 
-    const taskForm = document.createElement('form');
-    taskForm.setAttribute('id', 'task-form');
-    taskFormContainer.appendChild(taskForm);
+    makeCard() {
+        let card = document.createElement('div');
+        card.classList.add('task-card');
+        tasksContainer.appendChild(card);
 
-    const taskFormTitle = document.createElement('h2');
-    taskFormTitle.classList.add('form-title');
-    taskForm.appendChild(taskFormTitle);
-    taskFormTitle.textContent = "Add New Task";
+        let name = document.createElement('h2');
+        name.classList.add('card-task-name');
+        card.appendChild(name);
 
-    const taskFormNameLabel = document.createElement('label');
-    taskFormNameLabel.setAttribute('for', 'task-name');
-    taskFormNameLabel.textContent = "Name:";
-    taskForm.appendChild(taskFormNameLabel);
+        let dueDate = document.createElement('h2');
+        dueDate.classList.add('card-task-date');
+        card.appendChild(dueDate);
 
-    const taskFormNameInput = document.createElement('input');
-    taskFormNameInput.setAttribute('type', 'text');
-    taskFormNameInput.setAttribute('name', 'task-name');
-    taskForm.appendChild(taskFormNameInput);
+        let desc = document.createElement('p');
+        desc.classList.add('card-task-desc');
+        card.appendChild(desc);
 
-    const taskFormDatelabel = document.createElement('label');
-    taskFormNameLabel.setAttribute('for', 'task-date');
-    taskFormDatelabel.textContent = "Due Date:";
-    taskForm.appendChild(taskFormDatelabel);
+        let priority = document.createElement('img');
+        priority.classList.add('card-task-priority');
+        card.appendChild(priority);
 
-    const taskFormDateInput = document.createElement('input');
-    taskFormDateInput.setAttribute('type', 'date');
-    taskFormDateInput.setAttribute('name', 'task-date');
-    taskForm.appendChild(taskFormDateInput);
+        let assocProj = document.createElement('h3');
+        assocProj.classList.add('card-task-project');
+        card.appendChild(assocProj);
 
-    const taskFormDescLabel = document.createElement('label');
-    taskFormDescLabel.setAttribute('for', 'task-desc');
-    taskFormDescLabel.textContent = "Description:";
-    taskForm.appendChild(taskFormDescLabel);
+        let taskCompleteLabel = document.createElement('label');
+        taskCompleteLabel.textContent = "Completed:"
+        taskCompleteLabel.setAttribute('for', 'task-checkbox');
+        taskCompleteLabel.classList.add('task-completed-label');
+        card.appendChild(taskComplete);
 
-    const taskFormDescInput = document.createElement('input');
-    taskFormDescInput.setAttribute('type', 'text');
-    taskFormDescInput.setAttribute('name', 'task-desc');
-    taskForm.appendChild(taskFormDescInput);
+        let taskComplete = document.createElement('input');
+        taskComplete.setAttribute('type', 'checkbox');
+        taskComplete.setAttribute('name', 'task-checkbox');
+        taskCcomplete.classList.add('task-completed-box');
+        card.appendChild(taskComplete);
+    }
+}
 
-    const taskFormPriorityLabel = document.createElement('label');
-    taskFormPriorityLabel.setAttribute('for', 'task-priority');
-    taskFormPriorityLabel.textContent = "Priority:";
-    taskForm.appendChild(taskFormPriorityLabel);
+// class TaskList {
+//     constructor() {
+//         this.taskList = []
+//     }
 
-    const taskFormPriorityInput = document.createElement('select');
-    taskFormPriorityInput.setAttribute('name', 'task-priority');
-    taskForm.appendChild(taskFormPriorityInput);
+//     newTask(name, dueDate, desc, priority, assocProj) {
+//         let task = new Task(name, dueDate, desc, priority, assocProj)
+//         this.taskList.push(task);
+//         return task;
+//     }
 
-    const taskFormPriorityLow = document.createElement('option');
-    taskFormPriorityLow.setAttribute('value', 'low');
-    taskFormPriorityLow.textContent = "Low";
-    taskFormPriorityInput.appendChild(taskFormPriorityLow);
+//     get allTasks() {
+//         return this.taskList
+//     }
+// }
 
-    const taskFormPriorityMed = document.createElement('option');
-    taskFormPriorityMed.setAttribute('value', 'medium');
-    taskFormPriorityMed.textContent = "Medium";
-    taskFormPriorityInput.appendChild(taskFormPriorityMed);
+// let tasks = new TaskList();
 
-    const taskFormPriorityHigh = document.createElement('option');
-    taskFormPriorityHigh.setAttribute('value', 'high');
-    taskFormPriorityHigh.textContent = "High";
-    taskFormPriorityInput.appendChild(taskFormPriorityHigh);
+export function saveTask() {
+    console.log("test test test");
 
-    const taskFormProjectLabel = document.createElement('label')
-    taskFormProjectLabel.setAttribute('for', 'task-project');
-    taskFormProjectLabel.textContent = "Associated with Project:";
-    taskForm.appendChild(taskFormProjectLabel);
+    let taskName = document.getElementById('task-name').value;
+    console.log("task name is " + taskName);
+    let taskDate = document.getElementById('task-date').value;
+    console.log("task date is " + taskDate);
+    let taskDesc = document.getElementById('task-desc').value;
+    console.log("task desc is " + taskDesc);
+    let taskPriority = document.getElementById('task-priority').value;
+    console.log("task priority is " + taskPriority);
+    let taskProject = document.getElementById('task-project').value;
+    console.log("task project is " + taskProject);
 
-    const taskFormProjectInput = document.createElement('select');
-    taskFormProjectInput.setAttribute('name', 'task-project');
-    taskForm.appendChild(taskFormProjectInput);
+    if (taskName === "" || taskDate === "") {
+        alert("You must enter a name and due date for the task.")
+    } else {
+    const addedTask = new Task(taskName, taskDate, taskDesc, taskPriority, taskProject);
+    taskList.push(addedTask);
+    console.log(taskList);
+    setTimeout(displaySuccessfulAlert, 300);
+    clearForm();
 
-    const taskFormProjectTest = document.createElement('option');
-    taskFormProjectTest.setAttribute('value', 'test-project');
-    taskFormProjectTest.textContent = "Test Project";
-    taskFormProjectInput.appendChild(taskFormProjectTest);
+    }
+}
 
-    const taskBtnContainer = document.createElement('div');
-    taskBtnContainer.setAttribute('id', 'task-button-container');
-    taskForm.appendChild(taskBtnContainer);
+function displaySuccessfulAlert() {
+    alert("Your task has been added.")
+    //make a custom popup 
+}
 
-    const taskSubmitBtn = document.createElement('button');
-    taskSubmitBtn.setAttribute('id', 'submit-task');
-    taskSubmitBtn.setAttribute('type', 'button');
-    taskSubmitBtn.textContent = "Submit";
-    taskBtnContainer.appendChild(taskSubmitBtn);
+function closeSuccessfulAlert() {
+    //use set timeout method to close the popup
+}
 
-    const taskCancelBtn = document.createElement('button');
-    taskCancelBtn.setAttribute('id', 'cancel-task');
-    taskCancelBtn.setAttribute('type', 'button');
-    taskCancelBtn.textContent = "Cancel";
-    taskBtnContainer.appendChild(taskCancelBtn);
-    taskCancelBtn.addEventListener('click', e => {
-        taskFormContainer.style.display = "none";
-        newTaskDiv.style.display = "flex";
-        newProjectDiv.style.display = "flex";
+function clearForm() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        console.log("cleared");
+        input.value = "";
     })
-};
+}
+
+// function displayTasks() {
+//     let tasks = new TaskList();
+//     tasks.allTasks.forEach(task => {
+//         task.makeCard();
+//     })
+// }
+
+
 
