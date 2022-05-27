@@ -1,6 +1,7 @@
+import greenCheckmarkImage from './images/icons/green-checkmark.png';
+
 const tasksContainer = document.createElement('div');
 tasksContainer.setAttribute('id', 'tasks-card-container');
-let taskList = [];
 
 class Task {
     constructor(name, dueDate, desc, priority, assocProj) {
@@ -54,23 +55,21 @@ class Task {
     }
 }
 
-// class TaskList {
-//     constructor() {
-//         this.taskList = []
-//     }
+class TaskList {
+    constructor() {
+        this.taskList = []
+    }
 
-//     newTask(name, dueDate, desc, priority, assocProj) {
-//         let task = new Task(name, dueDate, desc, priority, assocProj)
-//         this.taskList.push(task);
-//         return task;
-//     }
+    newTask(name, dueDate, desc, priority, assocProj) {
+        let task = new Task(name, dueDate, desc, priority, assocProj)
+        this.taskList.push(task);
+        return task;
+    }
 
-//     get allTasks() {
-//         return this.taskList
-//     }
-// }
-
-// let tasks = new TaskList();
+    get allTasks() {
+        return this.taskList
+    }
+}
 
 export function saveTask() {
     console.log("test test test");
@@ -86,28 +85,47 @@ export function saveTask() {
     let taskProject = document.getElementById('task-project').value;
     console.log("task project is " + taskProject);
 
-    if (taskName === "" || taskDate === "") {
-        alert("You must enter a name and due date for the task.")
-    } else {
-    const addedTask = new Task(taskName, taskDate, taskDesc, taskPriority, taskProject);
-    taskList.push(addedTask);
-    console.log(taskList);
-    setTimeout(displaySuccessfulAlert, 300);
-    clearForm();
+    let tasks = new TaskList();
+    createTask();
 
+    function createTask() {
+        if (taskName === "" || taskDate === "") {
+            alert("You must enter a name and due date for the task.")
+        } else {
+            tasks.newTask(taskName, taskDate, taskDesc, taskPriority, taskProject);
+            console.log(tasks.allTasks);
+            displaySuccessfulAlert();
+            clearForm();
+            setTimeout(closeSuccessfulAlert, 1500);
+        }
     }
 }
 
 function displaySuccessfulAlert() {
-    alert("Your task has been added.")
-    //make a custom popup 
+    const container = document.getElementById('task-form-container');
+
+    const modalContainer = document.createElement('div');
+    modalContainer.setAttribute('id', 'modal-container');
+    container.appendChild(modalContainer);
+
+    const modalText = document.createElement('p');
+    modalText.classList.add('modal-text');
+    modalText.textContent = "Task successfully added!"
+    modalContainer.appendChild(modalText);
+
+    const modalIcon = document.createElement('img');
+    modalIcon.classList.add('modal-icon');
+    modalIcon.src = greenCheckmarkImage;
+    modalIcon.alt = "Green check mark icon";
+    modalContainer.appendChild(modalIcon);
 }
 
 function closeSuccessfulAlert() {
-    //use set timeout method to close the popup
+    const modal = document.getElementById('modal-container');
+    modal.parentElement.removeChild(modal);
 }
 
-function clearForm() {
+export function clearForm() {
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
         console.log("cleared");
