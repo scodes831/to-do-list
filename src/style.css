@@ -105,6 +105,10 @@ li:not(:last-child) {
     text-align: center;
 }
 
+.form-title {
+    text-align: center;
+}
+
 button {
     width: 25%;
     padding: 4px;
@@ -115,21 +119,26 @@ button {
     background-color: white;
 }
 
-#task-form-container {
+#task-form-container, #project-form-container {
     margin: 50px 0 0 0;
     background-color: rgb(219, 241, 249);
+    box-shadow: 2px, 2px, 4px, 2px, rgba(0,0,0, .9);
     border-radius: 8px;
-    padding: 28px;
-    max-height: 35vh;
+    padding: 14px;
+    max-height: 50%;
     min-width: 400px;
 }
 
-#task-form {
+#project-form-container {
+    max-height: 30%;
+}
+
+#task-form, #project-form {
     display: flex;
     flex-direction: column;
 }
 
-#task-button-container {
+#task-button-container, #project-button-container {
     display: flex;
     margin-top: 10px;
 }
@@ -138,15 +147,23 @@ input, select, option {
     margin-bottom: 4px;
 }
 
-#task-button-container > button {
+#task-button-container > button,
+#project-button-container > button {
     text-align: center;
     padding: 4px;
     border: none;
     border-radius: 6px;
+    box-shadow: 1px 1px 2px 1px rgba(0,0,0, .1);
+}
+
+#task-button-container > button:hover,
+#project-button-container > button:hover {
+    cursor: pointer;
+    box-shadow: 2px 2px 3px 1px rgba(0,0,0, .1);
 }
 
 #modal-container {
-    margin-top: 8px;
+    margin-top: 12px;
     display: grid;
     grid-template-columns: 1fr;
     justify-content: center;
@@ -154,11 +171,11 @@ input, select, option {
 
 .modal-text {
     text-align: center;
-    font-size: 20px;
+    font-size: 16px;
     margin-bottom: 8px;
 }
 .modal-icon {
-    width: 40px;
+    width: 27px;
     height: auto;
     margin: 0 auto;
 }
