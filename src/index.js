@@ -1,6 +1,6 @@
 require('./style.css');
 
-import { saveProject } from './projects';
+import { saveProject, displayProjectsList } from './projects';
 import { saveTask, 
         clearForm, 
         removeTaskDiv,
@@ -22,7 +22,6 @@ const homeLink = document.querySelector('.home');
 const taskFormContainer = document.getElementById('task-form-container');
 const projectFormContainer = document.getElementById('project-form-container');
 const tasksTableContainer = document.getElementById('new-task-container');
-const taskDeleteIcons = document.querySelectorAll('.delete-task');
 
 let userClicks = ["home"];
 
@@ -46,9 +45,11 @@ navLinks.forEach(link => {
         console.log(userClicks);
         if (previousPage === "home") {
             removeTaskFormContainer();
+            removeProjectFormContainer();
             removeNewDivs();
         } else if (previousPage === "due-today" || previousPage === "due-this-week" || previousPage === "due-this-month") {
-            removeTaskFormContainer();
+            // removeTaskFormContainer();
+            // removeProjectFormContainer();   
             removeTaskTable();
         }       
 
@@ -64,18 +65,18 @@ navLinks.forEach(link => {
         } else if (e.target.id === "all-tasks") {
             displayAllTasksList();
         } else if (e.target.id === "my-projects") {
-            displayMyProjectsList();
+        displayProjectsList();
         } else if (e.target.id === "home") {
             displayNewDivs();
         }
     });
 });
 
-taskDeleteIcons.forEach(icon => {
-    icon.addEventListener('click', e => {
-        console.log("the task is deleted");
-    })
-});
+// taskDeleteIcons.forEach(icon => {
+//     icon.addEventListener('click', e => {
+//         console.log("the task is deleted");
+//     })
+// });
 
 function removeNewDivs() {
     newTaskDiv.style.display = "none";
@@ -88,27 +89,36 @@ function displayNewDivs() {
 };
 
 function removeTaskFormContainer() {
+    const doesTaskFormExist = !!document.getElementById('task-form-container');
     const taskFormContainer = document.getElementById('task-form-container');
-    if (taskFormContainer.classList.contains('active')) {
-        taskFormContainer.remove();
-        taskFormContainer.classList.remove('active');
+    if (doesTaskFormExist === true) {
+        console.log("task form container exists");
+        removeTaskForm(taskFormContainer);
     } else {
-        return;
-    }    
-};
-
-function displayTaskFormContainer() {
-    taskFormContainer.style.display = "block";
+        console.log("task form container does NOT exist");
+    }
+    
 };
 
 function removeProjectFormContainer() {
-    projectFormContainer.style.display = "none";
-}
+    const doesProjectFormExist = !!document.getElementById('project-form-container');
+    const projectFormContainer = document.getElementById('project-form-container');
+    if (doesProjectFormExist === true) {
+        console.log("proj form container exists");
+        removeTaskForm(projectFormContainer);
+    } else {
+        console.log("project form container does NOT exist");
+    }
+};
 
-function displayProjectFormContainer() {
-    projectFormContainer.style.display = "block";
+// function displayTaskFormContainer() {
+//     taskFormContainer.style.display = "block";
+// };
 
-}
+// function displayProjectFormContainer() {
+//     projectFormContainer.style.display = "block";
+
+// }
 
 function addProjectForm() {
     const projectFormContainer = document.createElement('div');
@@ -169,7 +179,6 @@ function addProjectForm() {
     projectSubmitBtn.textContent = "Submit";
     projectBtnContainer.appendChild(projectSubmitBtn);
     projectSubmitBtn.addEventListener('click', () => {
-        console.log('submit clicked');
         saveProject();
     });
 
@@ -282,7 +291,6 @@ function addTaskForm() {
     taskSubmitBtn.textContent = "Submit";
     taskBtnContainer.appendChild(taskSubmitBtn);
     taskSubmitBtn.addEventListener('click', () => {
-        console.log('submit clicked');
         saveTask();
     });
 
@@ -298,9 +306,14 @@ function addTaskForm() {
     });
 };
 
-function removeTaskForm(container) {
+function removeTaskForm(a) {
+    console.log("the container is " + a);
+    const container = document.getElementById('content-container');
+    container.removeChild(a);
+    // a.style.display = "none";
     clearForm();
-    container.style.display = "none";
+    
+    
 };
 
 
