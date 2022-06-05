@@ -1,6 +1,10 @@
 require('./style.css');
 
-import { saveProject, displayProjectsList } from './projects';
+import { saveProject, 
+        displayProjectsList, 
+        removeProjectTable, 
+        addProjectToTaskForm} from './projects';
+
 import { saveTask, 
         clearForm, 
         removeTaskDiv,
@@ -47,11 +51,11 @@ navLinks.forEach(link => {
             removeTaskFormContainer();
             removeProjectFormContainer();
             removeNewDivs();
-        } else if (previousPage === "due-today" || previousPage === "due-this-week" || previousPage === "due-this-month") {
-            // removeTaskFormContainer();
-            // removeProjectFormContainer();   
+        } else if (previousPage === "due-today" || previousPage === "due-this-week" || previousPage === "due-this-month" || previousPage === "all-tasks") {  
             removeTaskTable();
-        }       
+        } else if (previousPage === "my-projects") {
+            removeProjectTable();
+        }    
 
         if (e.target.id === "due-today") {
             console.log("display tasks due today");
@@ -276,10 +280,7 @@ function addTaskForm() {
     taskFormProjectInput.setAttribute('name', 'task-project');
     taskForm.appendChild(taskFormProjectInput);
 
-    const taskFormProjectTest = document.createElement('option');
-    taskFormProjectTest.setAttribute('value', 'test-project');
-    taskFormProjectTest.textContent = "Test Project";
-    taskFormProjectInput.appendChild(taskFormProjectTest);
+    addProjectToTaskForm();
 
     const taskBtnContainer = document.createElement('div');
     taskBtnContainer.setAttribute('id', 'task-button-container');
@@ -310,7 +311,6 @@ function removeTaskForm(a) {
     console.log("the container is " + a);
     const container = document.getElementById('content-container');
     container.removeChild(a);
-    // a.style.display = "none";
     clearForm();
     
     
