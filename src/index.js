@@ -3,7 +3,7 @@ require('./style.css');
 import { saveProject, 
         displayProjectsList, 
         removeProjectTable, 
-        addProjectToTaskForm} from './projects';
+        addProjectToTaskForm } from './projects';
 
 import { saveTask, 
         clearForm, 
@@ -27,7 +27,7 @@ const taskFormContainer = document.getElementById('task-form-container');
 const projectFormContainer = document.getElementById('project-form-container');
 const tasksTableContainer = document.getElementById('new-task-container');
 
-let userClicks = ["home"];
+export let userClicks = ["home"];
 
 addTaskBtn.addEventListener('click', () => {
     removeNewDivs();
@@ -69,18 +69,12 @@ navLinks.forEach(link => {
         } else if (e.target.id === "all-tasks") {
             displayAllTasksList();
         } else if (e.target.id === "my-projects") {
-        displayProjectsList();
+            displayProjectsList();
         } else if (e.target.id === "home") {
             displayNewDivs();
         }
     });
 });
-
-// taskDeleteIcons.forEach(icon => {
-//     icon.addEventListener('click', e => {
-//         console.log("the task is deleted");
-//     })
-// });
 
 function removeNewDivs() {
     newTaskDiv.style.display = "none";
@@ -92,11 +86,10 @@ function displayNewDivs() {
     newProjectDiv.style.display = "flex";
 };
 
-function removeTaskFormContainer() {
+export function removeTaskFormContainer() {
     const doesTaskFormExist = !!document.getElementById('task-form-container');
     const taskFormContainer = document.getElementById('task-form-container');
     if (doesTaskFormExist === true) {
-        console.log("task form container exists");
         removeTaskForm(taskFormContainer);
     } else {
         console.log("task form container does NOT exist");
@@ -108,21 +101,11 @@ function removeProjectFormContainer() {
     const doesProjectFormExist = !!document.getElementById('project-form-container');
     const projectFormContainer = document.getElementById('project-form-container');
     if (doesProjectFormExist === true) {
-        console.log("proj form container exists");
         removeTaskForm(projectFormContainer);
     } else {
         console.log("project form container does NOT exist");
     }
 };
-
-// function displayTaskFormContainer() {
-//     taskFormContainer.style.display = "block";
-// };
-
-// function displayProjectFormContainer() {
-//     projectFormContainer.style.display = "block";
-
-// }
 
 function addProjectForm() {
     const projectFormContainer = document.createElement('div');
@@ -282,6 +265,11 @@ function addTaskForm() {
 
     addProjectToTaskForm();
 
+    const defaultTaskFormProjectOption = document.createElement('option');
+    defaultTaskFormProjectOption.setAttribute('value', 'Tasks');
+    defaultTaskFormProjectOption.textContent = "Tasks";
+    taskFormProjectInput.appendChild(defaultTaskFormProjectOption);
+
     const taskBtnContainer = document.createElement('div');
     taskBtnContainer.setAttribute('id', 'task-button-container');
     taskForm.appendChild(taskBtnContainer);
@@ -308,12 +296,9 @@ function addTaskForm() {
 };
 
 function removeTaskForm(a) {
-    console.log("the container is " + a);
     const container = document.getElementById('content-container');
     container.removeChild(a);
     clearForm();
-    
-    
 };
 
 
