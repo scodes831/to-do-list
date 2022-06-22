@@ -1,5 +1,4 @@
 import greenCheckmarkImage from './images/icons/green-checkmark.png';
-import trashBinImage from './images/icons/trash-bin.png';
 import lowPriorityImage from './images/icons/low.png';
 import medPriorityImage from './images/icons/medium.png';
 import highPriorityImage from './images/icons/high.png';
@@ -122,8 +121,12 @@ let todayList = [];
 let thisWeekList = [];
 let thisMonthList = [];
 
+function isItDueToday(dateA, dateB) {
+    return (compareAsc(dateA, dateB) === 0);
+}
+
 function addToTodayList(dateA, dateB, display, taskInput) {
-    if (compareAsc(dateA, dateB) === 0) {
+    if (isItDueToday(dateA, dateB) === true) {
         let addToday = ++numDueToday;
         display.textContent = addToday;
         todayList.push(taskInput)
@@ -131,12 +134,61 @@ function addToTodayList(dateA, dateB, display, taskInput) {
     } 
 };
 
+function removeFromAllTasks(selectedTaskName) {
+    const indexOfSelected = taskList.findIndex(function(x, index) {
+        return x.name === selectedTaskName;
+    })
+
+    const displayNumAllTasks = document.getElementById('num-all-tasks');
+    let updated = --numAllTasks;
+    console.log("the new task count is " + updated);
+    displayNumAllTasks.textContent = updated;
+    taskList.splice(indexOfSelected, 1);
+};
+
+function removeFromTodayList(selectedTaskName) {
+    const indexOfSelected = todayList.findIndex(function(x, index) {
+        return x.name === selectedTaskName
+    })
+
+    const displayNumDueToday = document.getElementById('num-due-today');
+    let updated = --numDueToday;
+    displayNumDueToday.textContent = updated;
+    todayList.splice(indexOfSelected, 1);
+};
+
+function removeFromThisWeekList(selectedTaskName) {
+    const indexOfSelected = thisWeekList.findIndex(function(x, index) {
+        return x.name === selectedTaskName
+    })
+
+    const displayNumDueThisWeek = document.getElementById('num-due-this-week');
+    let updated = --numDueThisWeek;
+    displayNumDueThisWeek.textContent = updated;
+    thisWeekList.splice(indexOfSelected, 1);
+};
+
+function removeFromThisMonthList(selectedTaskName) {
+    const indexOfSelected = thisMonthList.findIndex(function(x, index) {
+        return x.name === selectedTaskName
+    })
+
+    const displayNumDueThisMonth = document.getElementById('num-due-this-month');
+    let updated = --numDueThisMonth;
+    displayNumDueThisMonth.textContent = updated;
+    thisMonthList.splice(indexOfSelected, 1);
+};
+
 export function displayTodayList() {
     createTaskTable(todayList);
 };
 
+function isItDueThisWeek(dateA, dateB) {
+    return (isSameWeek(dateA, dateB));
+};
+
 function addToThisWeekList(dateA, dateB, display, taskInput) {
-    if (isSameWeek(dateA, dateB)) {
+    if (isItDueThisWeek(dateA, dateB) === true) {
         let addWeek = ++numDueThisWeek;
         display.textContent = addWeek;
         thisWeekList.push(taskInput);
@@ -148,8 +200,12 @@ export function displayThisWeekList() {
     createTaskTable(thisWeekList);
 };
 
+function isItDueThisMonth(dateA, dateB) {
+    return (isSameMonth(dateA, dateB));
+}
+
 function addToThisMonthList(dateA, dateB, display, taskInput) {
-    if (isSameMonth(dateA, dateB)) {
+    if (isItDueThisMonth(dateA, dateB) === true) {
         let addMonth = ++numDueThisMonth;
         display.textContent = addMonth;
         thisMonthList.push(taskInput);
@@ -167,7 +223,7 @@ export function displayAllTasksList() {
 
 export function displayTaskTableByProjectName(a) {
     createTaskTable(a);
-}
+};
 
 export function displayTasksbyProjectName(project) {
     let projectTasks = taskList.filter(forThisProject);
@@ -226,9 +282,6 @@ function createTaskTable(a) {
     projHeading.textContent = "Associated Project";
     headRow.appendChild(projHeading);
 
-    const deleteHeading = document.createElement('th');
-    headRow.appendChild(deleteHeading);
-
     const tableBody = document.createElement('tbody');
     tasksTable.appendChild(tableBody);
 
@@ -239,10 +292,11 @@ function createTaskTable(a) {
         let markCompletedCell = document.createElement('td');
         newRow.appendChild(markCompletedCell);
 
-        let markCompletedInput = document.createElement('input');
-        markCompletedInput.setAttribute('type', 'checkbox');
-        markCompletedInput.classList.add('complete-checkbox');
-        markCompletedCell.appendChild(markCompletedInput);
+        let markCompleteBtn = document.createElement('button');
+        markCompleteBtn.classList.add('complete-button');
+        markCompletedCell.appendChild(markCompleteBtn);
+        markCompleteBtn.textContent = "▢";
+        markCompleteBtn.style.backgroundColor = "rgba(0,0,0,0)";
 
         let dateCell = document.createElement('td');
         dateCell.textContent = a[i].dueDate;
@@ -276,40 +330,17 @@ function createTaskTable(a) {
             priorityCellIcon.alt = "low priority";
             priorityCellIcon.classList.add('low');
         }
+
         priorityCell.appendChild(priorityCellIcon);
         
         let projCell = document.createElement('td');
         projCell.textContent = a[i].assocProj;
         newRow.appendChild(projCell);
 
-        let deleteIconCell = document.createElement('td');
-        newRow.appendChild(deleteIconCell);
-
-        let deleteButton = document.createElement('input');
-        deleteButton.setAttribute('type', 'image');
-        deleteButton.setAttribute('name', 'delete-button');
-        deleteButton.classList.add('delete-task');
-        deleteButton.src = trashBinImage;
-        deleteButton.alt = "delete";
-        deleteIconCell.appendChild(deleteButton);
-
         markTaskCompleted();
         editExistingTask();
     }
-
 };
-
-function markCompleted() {
-    const checkboxes = document.querySelectorAll('.complete-checkbox');
-    console.log("the checkboxes are " + checkboxes);
-    checkboxes.forEach(checkbox => console.log(checkbox));
-};
-
-taskDeleteIcons.forEach(icon => {
-    icon.addEventListener('click', e => {
-        console.log("the task is deleted");
-    })
-});
 
 export function removeTaskTable() {
     const taskTable = document.getElementById('new-task-container');
@@ -317,20 +348,44 @@ export function removeTaskTable() {
 };
 
 function markTaskCompleted() {
-    const completedCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-    for (let i = 0; i < completedCheckboxes.length; i++) {
-        completedCheckboxes[i].addEventListener('change', e => {
-            if(e.target.checked) {
-                console.log("the checkbox is checked");
-                let parent = e.target.parentElement; // td
-                console.log(parent);
-                //get the value of the task name
-                //search the arrays for the task name
-                //remove the task from the arrays (all)
-            }
+    const completeBtns = document.querySelectorAll('.complete-button');
+    let today = new Date();
+    let todayDay = +today.getDate();
+    let todayMonth = +today.getMonth();
+    let todayYear = +today.getFullYear();
+    today = new Date(todayYear, todayMonth, todayDay);
+    for (let i = 0; i < completeBtns.length; i++) {
+        completeBtns[i].addEventListener('click', function(e) {
+            e.stopPropagation();
+                completeBtns[i].classList.add("clicked");
+                let selection = e.target;
+                let siblings = selection.parentElement.parentElement.children;
+                let row = selection.parentElement.parentElement;
+                console.log(`the row is ${row}`);
+                let selectedTaskName = siblings[2].textContent;
+                row.remove();
+                removeFromAllTasks(selectedTaskName);
+                let taskDate = siblings[1].textContent;
+                let newTaskDate = taskDate.split('-');
+                let dueDay = +newTaskDate[2];
+                let dueMonth = newTaskDate[1]-1;
+                let dueYear = +newTaskDate[0];
+                taskDate = new Date(dueYear, dueMonth, dueDay);
+
+                if (isItDueToday(today, taskDate) === true) {
+                    removeFromTodayList();
+                }
+
+                if (isItDueThisWeek(today, taskDate) === true) {
+                    removeFromThisWeekList();
+                }
+
+                if (isItDueThisMonth(today, taskDate) === true) {
+                    removeFromThisMonthList();
+                }
         })
     }
-}
+};
 
 function editExistingTask() {
     const tasksTable = document.getElementById('tasks-table');
@@ -350,9 +405,6 @@ function editExistingTask() {
             }
 
             let taskProj = rows[i].children[5].textContent;
-            // console.log("start 1");
-            // console.log("the priority is " + taskPriority);
-            // console.log("the proj is " + taskProj);
             removeTaskTable();
             showOverlay();
             showEditWindow(taskDate, taskName, taskDesc, taskPriority, taskProj);
@@ -365,12 +417,12 @@ function showOverlay() {
     const overlay = document.createElement('div');
     overlay.setAttribute('id', 'overlay');
     document.body.appendChild(overlay);
-}
+};
 
 function hideOverlay() {
     const overlay = document.getElementById('overlay');
     overlay.remove();
-}
+};
 
 function showEditWindow(date, name, desc, priority, proj) {
     console.log("the date is " + date);
@@ -490,17 +542,6 @@ function showEditWindow(date, name, desc, priority, proj) {
         editWindow.remove();
         hideOverlay();
     })
-    
-    const taskCancelBtn = document.createElement('button');
-    taskCancelBtn.setAttribute('id', 'cancel-task');
-    taskCancelBtn.setAttribute('type', 'button');
-    taskCancelBtn.textContent = "Cancel";
-    editBtnContainer.appendChild(taskCancelBtn);
-    taskCancelBtn.addEventListener('click', e => {
-        editWindow.remove();
-        hideOverlay();
-        reloadPreviousPage();
-    })
 };
 
 function updateTaskInfo(t) {
@@ -524,7 +565,6 @@ function updateTaskInfo(t) {
     })
 
     // console.log("the index is " + index);
-
     // console.log(`updated name is ${newTaskName}, old name ${name}`);
     // console.log(`updated date is ${newTaskDate}, old date ${date}`);
     // console.log(`updated desc is ${newTaskDesc}, old desc ${desc}`);
@@ -532,28 +572,22 @@ function updateTaskInfo(t) {
     // console.log(`updated proj is ${newTaskProject}, old proj ${proj}`);
 
     if (date !== newTaskDate) {
-        // console.log("the date HAS changed");
         taskList[index].dueDate = newTaskDate;
     } 
     if (name !== newTaskName) {
-        // console.log("the name HAS changed");
         taskList[index].name = newTaskName;
     } 
     if (desc !== newTaskDesc) {
-        // console.log("the desc HAS chagned");
         taskList[index].desc = newTaskDesc;
     } 
     if (priority !== newTaskPriority) {
-        // console.log("the priority HAS changed");
         taskList[index].priority = newTaskPriority;
     } 
     if (proj !== newTaskProject) {
-        // console.log("the project HAS changed");
         taskList[index].assocProj = newTaskProject;
     } 
 
     reloadPreviousPage();
-
 };
 
 function reloadPreviousPage() {
