@@ -12,7 +12,8 @@ import { saveTask,
         displayAllTasksList,
         displayThisMonthList, 
         displayThisWeekList, 
-        displayTodayList, } from './tasks';
+        displayTodayList, 
+        checkUniqueTaskName} from './tasks';
 
 const addTaskBtn = document.getElementById('add-task');
 const addProjectBtn = document.getElementById('add-project');
@@ -206,6 +207,11 @@ function addTaskForm() {
     taskFormNameInput.setAttribute('name', 'task-name');
     taskForm.appendChild(taskFormNameInput);
 
+    const errorName = document.createElement('p');
+    errorName.setAttribute('id', 'error-name');
+    errorName.classList.add('error');
+    taskForm.appendChild(errorName);
+
     const taskFormDatelabel = document.createElement('label');
     taskFormDatelabel.setAttribute('for', 'task-date');
     taskFormDatelabel.textContent = "Due Date:";
@@ -216,6 +222,11 @@ function addTaskForm() {
     taskFormDateInput.setAttribute('type', 'date');
     taskFormDateInput.setAttribute('name', 'task-date');
     taskForm.appendChild(taskFormDateInput);
+
+    const errorDate = document.createElement('p');
+    errorDate.setAttribute('id', 'error-date');
+    errorDate.classList.add('error');
+    taskForm.appendChild(errorDate);
 
     const taskFormDescLabel = document.createElement('label');
     taskFormDescLabel.setAttribute('for', 'task-desc');
@@ -270,6 +281,8 @@ function addTaskForm() {
     defaultTaskFormProjectOption.textContent = "Tasks";
     taskFormProjectInput.appendChild(defaultTaskFormProjectOption);
 
+    checkUniqueTaskName(taskFormNameInput);
+
     const taskBtnContainer = document.createElement('div');
     taskBtnContainer.setAttribute('id', 'task-button-container');
     taskForm.appendChild(taskBtnContainer);
@@ -280,7 +293,13 @@ function addTaskForm() {
     taskSubmitBtn.textContent = "Submit";
     taskBtnContainer.appendChild(taskSubmitBtn);
     taskSubmitBtn.addEventListener('click', () => {
-        saveTask();
+        const errorNameStatus = window.getComputedStyle(errorName).display;
+        const errorDateStatus = window.getComputedStyle(errorDate).display;
+        if (errorNameStatus === 'none' && errorDateStatus === 'none') {
+            saveTask();
+        } else {
+            e.preventDefault();
+        }
     });
 
     const taskCancelBtn = document.createElement('button');
@@ -292,6 +311,7 @@ function addTaskForm() {
         removeTaskForm(taskFormContainer);
         displayNewDivs();
         console.log("it worked");
+
     });
 };
 

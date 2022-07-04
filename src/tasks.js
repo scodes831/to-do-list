@@ -40,41 +40,28 @@ export function saveTask() {
 
     function createTask() {
         const displayNumAllTasks = document.getElementById('num-all-tasks');
+        const errorName = document.getElementById('error-name');
+        const errorDate = document.getElementById('error-date');
 
-        if (taskName === "" || taskDate === "") {
-            error = true;
-            console.log(taskList);
-            displayErrorMessage("You must enter a name and due date for the task.");
+        if (taskName === "") {
+            errorName.style.display = "block";
+            errorName.textContent = "You must enter a task name.";            
         } else {
-            closeErrorMessage();
+            errorName.style.display = "none";
         }
-        if (error === false) {
-            console.log("there isn't an error");
-            if (taskList.length === 0) {
-                console.log("this is the first task");
-                return submitTask();
-            } else {
-                console.log("the task list has " + taskList.length);
-                for (let i = 0; i < taskList.length; ++i) {
-                    console.log(i);
-                    let existingTaskName = taskList[i].name;
-                    console.log(`the task in the array is ${taskList[0].name}`);
-                    let regex  = new RegExp(taskName);
-                    let matchNames = existingTaskName.match(regex);
-                    console.log(`match names is ${matchNames}`);
+        if (taskDate === "") {
+            errorDate.style.display = "block";
+            errorDate.textContent = "You must enter a due date.";
+        } else {
+            errorDate.style.display = "none";
+        }
 
-                    if (matchNames !== null) {
-                        error = true;
-                        displayErrorMessage("Please enter a unique task name.")
-                        console.log(`the existing task name is ${existingTaskName}`);
-                        console.log(`the new task name is ${taskName}`);
-                    } else {
-                        console.log("match names is null");
-                        closeErrorMessage();
-                        submitTask();
-                    }
-                }
-            }
+        const errorNameStatus = window.getComputedStyle(errorName).display;
+        const errorDateStatus = window.getComputedStyle(errorDate).display;
+
+        if (errorNameStatus === 'none' && errorDateStatus === 'none') {
+            console.log("there isn't an error");
+            submitTask();
         }
 
         function submitTask() {
@@ -90,22 +77,6 @@ export function saveTask() {
         }
     }                
 };
-
-function displayErrorMessage(message) {
-    const container = document.getElementById('task-form-container');
-    const error = document.createElement('p');
-    error.setAttribute('id', 'error-message');
-    error.textContent = message;
-    container.appendChild(error);
-}
-
-function closeErrorMessage() {
-    const doesErrorExist = !!document.getElementById('error-message');
-    if (doesErrorExist === true) {
-        const error = document.getElementById('error-message');
-        error.style.display = "none";
-    }
-}
 
 function displaySuccessfulAlert() {
     const container = document.getElementById('task-form-container');
@@ -509,7 +480,6 @@ function showEditWindow(oldDate, oldName, oldDesc, oldPriority, oldProj) {
     const errorName = document.createElement('p');
     errorName.setAttribute('id', 'error-name');
     errorName.classList.add('error');
-    errorName.textContent = "Error message";
     taskEditForm.appendChild(errorName);
 
     const editFormDateLabel = document.createElement('label');
@@ -527,7 +497,6 @@ function showEditWindow(oldDate, oldName, oldDesc, oldPriority, oldProj) {
     const errorDate = document.createElement('p');
     errorDate.setAttribute('id', 'error-date');
     errorDate.classList.add('error');
-    errorDate.textContent = "Error message";
     taskEditForm.appendChild(errorDate);
 
     const editFormDescLabel = document.createElement('label');
@@ -613,7 +582,7 @@ function showEditWindow(oldDate, oldName, oldDesc, oldPriority, oldProj) {
     })
 };
 
-function checkUniqueTaskName(input) {
+export function checkUniqueTaskName(input) {
     input.addEventListener('input', function(event) {
         const errorName = document.getElementById('error-name');
         console.log(event.target.value);
@@ -643,7 +612,7 @@ function updateTaskInfo(t) {
     let newTaskDate = document.getElementById('task-date').value;
     let newTaskDesc = document.getElementById('task-desc').value;
     let newTaskPriority = document.getElementById('task-priority').value;
-    let newTaskProject = document.getElementById('task-project').value;
+    let newTaskProject = document.getElementById('task-project').value;0
     let error = false;
 
     console.log(`the new task name is ${newTaskName} and date is ${newTaskDate}`);
@@ -651,9 +620,6 @@ function updateTaskInfo(t) {
     const index = taskList.findIndex(function(x, index) {
         return x.name === oldTaskName;
     })
-
-    console.log(`the index is ${index}`);
-
 
     if (newTaskName === "") {
         const errorName = document.getElementById('error-name');
@@ -677,24 +643,6 @@ function updateTaskInfo(t) {
 
     if (oldTaskName !== newTaskName) {
         taskList[index].name = newTaskName;
-        // const errorName = document.getElementById('error-name');
-        // const errorStatus = window.getComputedStyle(errorName).display;
-
-        // for (let i = 0; i < taskList.length; i++) {
-        //     let regex = new RegExp(newTaskName);
-        //     let matchNames = taskList[index].name.match(regex);
-        //     console.log(`the matched name is ${matchNames}`);
-        //     if (matchNames === null) {
-        //         if (errorName === 'none') {
-        //             taskList[index].name = newTaskName;
-        //         } else {
-        //             errorName.textContent = "Please fix errors and try again";
-        //         }
-        //     } else {
-        //         errorName.textContent = "Please enter a unique task name."
-        //         return showEditWindow(oldTaskDate, oldTaskName, oldTaskDesc, oldTaskPriority, oldTaskproj);
-        //     }
-        // }
     } 
 
     if (oldTaskDesc !== newTaskDesc) {
