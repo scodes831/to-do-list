@@ -218,13 +218,19 @@ th, td {
 
 tbody tr {
     border-bottom: 1px solid rgba(0,0,0, .1);
+    width: 100%;
 }
 
 tbody tr:nth-of-type(even) {
     background-color:rgba(219, 241, 249, .8);
+    width: 100%;
 }
 
-.delete-task, .priority-icon {
+tr td:last-child {
+    margin-right: -20px;
+}
+
+.priority-icon {
     height: 24px;
     width: auto;
 }
@@ -241,4 +247,6 @@ tbody tr:nth-of-type(even) {
 .edit-window {
     z-index: 3;
 }
+
+
 

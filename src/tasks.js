@@ -11,7 +11,6 @@ const tasksContainer = document.createElement('div');
 tasksContainer.setAttribute('id', 'tasks-card-container');
 const taskDeleteIcons = document.querySelectorAll('input[type="image"]');
 
-
 class Task {
     constructor(name, dueDate, desc, priority, assocProj) {
         this.name = name,
@@ -29,13 +28,13 @@ class Task {
 export let taskList = [];
 let numAllTasks = 0;
 
-
 export function saveTask() {
     let taskName = document.getElementById('task-name').value;
     let taskDate = document.getElementById('task-date').value;
     let taskDesc = document.getElementById('task-desc').value;
     let taskPriority = document.getElementById('task-priority').value;
     let taskProject = document.getElementById('task-project').value;
+    let error = false;
     
     createTask();
 
@@ -43,8 +42,42 @@ export function saveTask() {
         const displayNumAllTasks = document.getElementById('num-all-tasks');
 
         if (taskName === "" || taskDate === "") {
-            alert("You must enter a name and due date for the task.")
+            error = true;
+            console.log(taskList);
+            displayErrorMessage("You must enter a name and due date for the task.");
         } else {
+            closeErrorMessage();
+        }
+        if (error === false) {
+            console.log("there isn't an error");
+            if (taskList.length === 0) {
+                console.log("this is the first task");
+                return submitTask();
+            } else {
+                console.log("the task list has " + taskList.length);
+                for (let i = 0; i < taskList.length; ++i) {
+                    console.log(i);
+                    let existingTaskName = taskList[i].name;
+                    console.log(`the task in the array is ${taskList[0].name}`);
+                    let regex  = new RegExp(taskName);
+                    let matchNames = existingTaskName.match(regex);
+                    console.log(`match names is ${matchNames}`);
+
+                    if (matchNames !== null) {
+                        error = true;
+                        displayErrorMessage("Please enter a unique task name.")
+                        console.log(`the existing task name is ${existingTaskName}`);
+                        console.log(`the new task name is ${taskName}`);
+                    } else {
+                        console.log("match names is null");
+                        closeErrorMessage();
+                        submitTask();
+                    }
+                }
+            }
+        }
+
+        function submitTask() {
             let task = new Task(taskName, taskDate, taskDesc, taskPriority, taskProject);
             taskList.push(task);
             console.log(taskList);
@@ -55,8 +88,24 @@ export function saveTask() {
             clearForm();
             setTimeout(closeSuccessfulAlert, 1500);
         }
-    };
+    }                
 };
+
+function displayErrorMessage(message) {
+    const container = document.getElementById('task-form-container');
+    const error = document.createElement('p');
+    error.setAttribute('id', 'error-message');
+    error.textContent = message;
+    container.appendChild(error);
+}
+
+function closeErrorMessage() {
+    const doesErrorExist = !!document.getElementById('error-message');
+    if (doesErrorExist === true) {
+        const error = document.getElementById('error-message');
+        error.style.display = "none";
+    }
+}
 
 function displaySuccessfulAlert() {
     const container = document.getElementById('task-form-container');
@@ -392,22 +441,22 @@ function editExistingTask() {
     const rows = document.getElementsByTagName('tr');
     for (let i = 1; i < rows.length; i++) {
         rows[i].addEventListener('click', () => {
-            let taskDate = rows[i].children[1].textContent;
-            let taskName = rows[i].children[2].textContent;
-            let taskDesc = rows[i].children[3].textContent;
-            let taskPriority = rows[i].children[4].children[0];
-            if (taskPriority.classList.contains('low')) {
-                taskPriority = "low";
-            } else if (taskPriority.classList.contains('medium')) {
-                taskPriority = "medium";
-            } else if (taskPriority.classList.contains('high')) {
-                taskPriority = "high";
+            let existingTaskDate = rows[i].children[1].textContent;
+            let existingTaskName = rows[i].children[2].textContent;
+            let existingTaskDesc = rows[i].children[3].textContent;
+            let existingTaskPriority = rows[i].children[4].children[0];
+            if (existingTaskPriority.classList.contains('low')) {
+                existingTaskPriority = "low";
+            } else if (existingTaskPriority.classList.contains('medium')) {
+                existingTaskPriority = "medium";
+            } else if (existingTaskPriority.classList.contains('high')) {
+                existingTaskPriority = "high";
             }
 
-            let taskProj = rows[i].children[5].textContent;
+            let existingTaskProj = rows[i].children[5].textContent;
             removeTaskTable();
             showOverlay();
-            showEditWindow(taskDate, taskName, taskDesc, taskPriority, taskProj);
+            showEditWindow(existingTaskDate, existingTaskName, existingTaskDesc, existingTaskPriority, existingTaskProj);
         })
     }
 };
@@ -424,12 +473,12 @@ function hideOverlay() {
     overlay.remove();
 };
 
-function showEditWindow(date, name, desc, priority, proj) {
-    console.log("the date is " + date);
-    console.log("the name is " + name);
-    console.log("the desc is " + desc);
-    console.log("the priority is " + priority);
-    console.log("the proj is " + proj);
+function showEditWindow(oldDate, oldName, oldDesc, oldPriority, oldProj) {
+    console.log("the date is " + oldDate);
+    console.log("the name is " + oldName);
+    console.log("the desc is " + oldDesc);
+    console.log("the priority is " + oldPriority);
+    console.log("the proj is " + oldProj);
     const container = document.getElementById('content-container');
     const editWindow = document.createElement('div');
     editWindow.setAttribute('id', 'task-form-container');
@@ -455,7 +504,13 @@ function showEditWindow(date, name, desc, priority, proj) {
     editFormNameInput.setAttribute('type', 'text');
     editFormNameInput.setAttribute('name', 'task-name');
     taskEditForm.appendChild(editFormNameInput);
-    editFormNameInput.value = name;
+    editFormNameInput.value = oldName;
+
+    const errorName = document.createElement('p');
+    errorName.setAttribute('id', 'error-name');
+    errorName.classList.add('error');
+    errorName.textContent = "Error message";
+    taskEditForm.appendChild(errorName);
 
     const editFormDateLabel = document.createElement('label');
     editFormDateLabel.setAttribute('for', 'task-date');
@@ -467,7 +522,13 @@ function showEditWindow(date, name, desc, priority, proj) {
     editFormDateInput.setAttribute('type', 'date');
     editFormDateInput.setAttribute('name', 'task-date');
     taskEditForm.appendChild(editFormDateInput);
-    editFormDateInput.value = date;
+    editFormDateInput.value = oldDate;
+
+    const errorDate = document.createElement('p');
+    errorDate.setAttribute('id', 'error-date');
+    errorDate.classList.add('error');
+    errorDate.textContent = "Error message";
+    taskEditForm.appendChild(errorDate);
 
     const editFormDescLabel = document.createElement('label');
     editFormDescLabel.setAttribute('for', 'task-desc');
@@ -479,7 +540,7 @@ function showEditWindow(date, name, desc, priority, proj) {
     editFormDescInput.setAttribute('type', 'text');
     editFormDescInput.setAttribute('name', 'task-desc');
     taskEditForm.appendChild(editFormDescInput);
-    editFormDescInput.value = desc;
+    editFormDescInput.value = oldDesc;
 
     const editFormPriorityLabel = document.createElement('label');
     editFormPriorityLabel.setAttribute('for', 'task-priority');
@@ -506,7 +567,7 @@ function showEditWindow(date, name, desc, priority, proj) {
     editFormPriorityHigh.textContent = "High";
     editFormPriorityInput.appendChild(editFormPriorityHigh);
 
-    editFormPriorityInput.value = priority;
+    editFormPriorityInput.value = oldPriority;
 
     const editFormProjectLabel = document.createElement('label');
     editFormProjectLabel.setAttribute('for', 'task-project');
@@ -524,8 +585,9 @@ function showEditWindow(date, name, desc, priority, proj) {
     defaultTaskFormProjectOption.setAttribute('value', 'Tasks');
     defaultTaskFormProjectOption.textContent = "Tasks";
     editFormProjectInput.appendChild(defaultTaskFormProjectOption);
+    editFormProjectInput.value = oldProj;
 
-    editFormProjectInput.value = proj;
+    checkUniqueTaskName(editFormNameInput);
 
     const editBtnContainer = document.createElement('div');
     editBtnContainer.setAttribute('id', 'task-button-container');
@@ -537,53 +599,111 @@ function showEditWindow(date, name, desc, priority, proj) {
     taskSubmitBtn.textContent = "Save";
     editBtnContainer.appendChild(taskSubmitBtn);
     taskSubmitBtn.addEventListener('click', e => {
-        let task = [date, name, desc, priority, proj];
-        updateTaskInfo(task);
-        editWindow.remove();
-        hideOverlay();
+        const errorNameStatus = window.getComputedStyle(errorName).display;
+        const errorDateStatus = window.getComputedStyle(errorDate).display;
+        if (errorNameStatus === 'none' && errorDateStatus === 'none') {
+            let oldTask = [oldDate, oldName, oldDesc, oldPriority, oldProj];
+            updateTaskInfo(oldTask);
+            editWindow.remove();
+            hideOverlay();
+        } else {
+            e.preventDefault();
+        }
+        
     })
 };
 
+function checkUniqueTaskName(input) {
+    input.addEventListener('input', function(event) {
+        const errorName = document.getElementById('error-name');
+        console.log(event.target.value);
+        let newVal = event.target.value;
+        let alreadyExists = taskList.some((task) => task.name === newVal);
+        console.log(alreadyExists);
+        if(alreadyExists === true) {
+            errorName.style.display = "block";
+            errorName.textContent = "Task name already exists";
+        } else {
+            errorName.style.display = "none";
+        }
+    })
+}
+
 function updateTaskInfo(t) {
-    console.log("the original task list");
+    console.log("start update task info function");
     console.log(taskList);
     
-    let date = t[0];
-    let name = t[1];
-    let desc = t[2];
-    let priority = t[3];
-    let proj = t[4];
+    let oldTaskDate = t[0];
+    let oldTaskName = t[1];
+    let oldTaskDesc = t[2];
+    let oldTaskPriority = t[3];
+    let oldTaskProj = t[4];
 
     let newTaskName = document.getElementById('task-name').value;
     let newTaskDate = document.getElementById('task-date').value;
     let newTaskDesc = document.getElementById('task-desc').value;
     let newTaskPriority = document.getElementById('task-priority').value;
     let newTaskProject = document.getElementById('task-project').value;
+    let error = false;
+
+    console.log(`the new task name is ${newTaskName} and date is ${newTaskDate}`);
 
     const index = taskList.findIndex(function(x, index) {
-        return x.name === name;
+        return x.name === oldTaskName;
     })
 
-    // console.log("the index is " + index);
-    // console.log(`updated name is ${newTaskName}, old name ${name}`);
-    // console.log(`updated date is ${newTaskDate}, old date ${date}`);
-    // console.log(`updated desc is ${newTaskDesc}, old desc ${desc}`);
-    // console.log(`updated priority is ${newTaskPriority}, old priority ${priority}`);
-    // console.log(`updated proj is ${newTaskProject}, old proj ${proj}`);
+    console.log(`the index is ${index}`);
 
-    if (date !== newTaskDate) {
+
+    if (newTaskName === "") {
+        const errorName = document.getElementById('error-name');
+        errorName.style.display = "block";
+        errorName.textContent = "You must enter a task name.";
+        return showEditWindow(oldTaskDate, oldTaskName, oldTaskDesc, oldTaskPriority, oldTaskProj);
+        
+    }
+    if (newTaskDate === "") {
+        const errorDate = document.getElementById('error-date');
+        errorDate.style.display = "block";
+        errorDate.textContent = "You must enter a due date.";
+        return showEditWindow(oldTaskDate, oldTaskName, oldTaskDesc, oldTaskPriority, oldTaskProj);
+    }
+
+    console.log("stop if blank");
+
+    if (oldTaskDate !== newTaskDate) {
         taskList[index].dueDate = newTaskDate;
-    } 
-    if (name !== newTaskName) {
+    }
+
+    if (oldTaskName !== newTaskName) {
         taskList[index].name = newTaskName;
+        // const errorName = document.getElementById('error-name');
+        // const errorStatus = window.getComputedStyle(errorName).display;
+
+        // for (let i = 0; i < taskList.length; i++) {
+        //     let regex = new RegExp(newTaskName);
+        //     let matchNames = taskList[index].name.match(regex);
+        //     console.log(`the matched name is ${matchNames}`);
+        //     if (matchNames === null) {
+        //         if (errorName === 'none') {
+        //             taskList[index].name = newTaskName;
+        //         } else {
+        //             errorName.textContent = "Please fix errors and try again";
+        //         }
+        //     } else {
+        //         errorName.textContent = "Please enter a unique task name."
+        //         return showEditWindow(oldTaskDate, oldTaskName, oldTaskDesc, oldTaskPriority, oldTaskproj);
+        //     }
+        // }
     } 
-    if (desc !== newTaskDesc) {
+
+    if (oldTaskDesc !== newTaskDesc) {
         taskList[index].desc = newTaskDesc;
     } 
-    if (priority !== newTaskPriority) {
+    if (oldTaskPriority !== newTaskPriority) {
         taskList[index].priority = newTaskPriority;
     } 
-    if (proj !== newTaskProject) {
+    if (oldTaskProj !== newTaskProject) {
         taskList[index].assocProj = newTaskProject;
     } 
 

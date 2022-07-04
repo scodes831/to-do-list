@@ -1,11 +1,14 @@
 import { closeSuccessfulAlert, 
-        clearForm } from './tasks';
+        clearForm, 
+        displayTasksbyProjectName,
+        taskList,
+        displayTaskTableByProjectName } from './tasks';
 
 import greenCheckmarkImage from './images/icons/green-checkmark.png';
 import trashBinImage from './images/icons/trash-bin.png';
 
 class Project {
-    constructor(name, deadline, desc, priority) {
+    constructor(name, deadline, desc) {
         this.name = name,
         this.deadline = deadline,
         this.desc = desc
@@ -97,9 +100,6 @@ function createProjectTable(a) {
     const headRow = document.createElement('tr');
     tableHead.appendChild(headRow);
 
-    const completedHeading = document.createElement('th');
-    headRow.appendChild(completedHeading);
-
     const deadlineHeading = document.createElement('th');
     deadlineHeading.classList.add('heading');
     deadlineHeading.textContent = "Deadline";
@@ -124,48 +124,63 @@ function createProjectTable(a) {
     for (let i = 0; i < a.length; i++) {        
         let newRow = document.createElement('tr');
         tableBody.appendChild(newRow);
-
-        let markCompletedCell = document.createElement('td');
-        newRow.appendChild(markCompletedCell);
-
-        let markCompletedInput = document.createElement('input');
-        markCompletedInput.setAttribute('type', 'checkbox');
-        markCompletedCell.appendChild(markCompletedInput);
-
+        
         let deadlineCell = document.createElement('td');
         deadlineCell.textContent = a[i].deadline;
         newRow.appendChild(deadlineCell);
 
         let nameCell = document.createElement('td');
         nameCell.textContent = a[i].name;
+        let pName = a[i].name;
         newRow.appendChild(nameCell);
+        nameCell.addEventListener('click', displayTasksbyProjectName(pName));
 
         let descCell = document.createElement('td');
         descCell.textContent = a[i].desc;
         newRow.appendChild(descCell);
 
-        let deleteIconCell = document.createElement('td');
-        newRow.appendChild(deleteIconCell);
-
-        let deleteButton = document.createElement('input');
-        deleteButton.setAttribute('type', 'image');
-        deleteButton.setAttribute('name', 'delete-button');
-        deleteButton.classList.add('delete-task');
-        deleteButton.src = trashBinImage;
-        deleteButton.alt = "delete";
-        deleteIconCell.appendChild(deleteButton);
-
-        // let deleteIcon = document.createElement('img');
-        // deleteIcon.classList.add('delete-task')
-        // deleteIcon.src = trashBinImage;
-        // deleteIcon.alt = "Remove task";
-        // deleteIconCell.appendChild(deleteIcon);
+        showTasksByProjectName(taskList);
     }  
 };
 
+function showTasksByProjectName(a) {
+    const projectsTable = document.getElementById('projects-table');
+    const rows = projectsTable.getElementsByTagName('tr');
+        for (let i = 1; i < rows.length; i++) {
+            rows[i].addEventListener('click', () => {
+                console.log("row clicked");
+                console.log(rows[i].children[1].textContent);
+                console.log(a);
+                let project = rows[i].children[1].textContent;
+                console.log("the project name is " + project);
+                let projectArr = [];
+                for (let i = 0; i< a.length; i++) {
+                    if (a[i].assocProj === project) {
+                        console.log(a[i].assocProj);
+                        console.log(project);
+                        projectArr.push(a[i]);
+                    }
+                    console.log(projectArr);
+                }
+                removeProjectTable();
+                displayTaskTableByProjectName(projectArr);
+            })
+        }
+
+}
+
 export function removeProjectTable() {
+    const doesProjTableExist = !!document.getElementById('new-project-container');
+    const doesTaskTableExist = !!document.getElementById('new-task-container');
     const projectTable = document.getElementById('new-project-container');
-    projectTable.remove();
+    const tasksTable = document.getElementById('new-task-container');
+    
+    if (doesProjTableExist === true) {
+        projectTable.remove();
+    }
+    if (doesTaskTableExist === true) {
+        tasksTable.remove();
+    }
 };
 
 
