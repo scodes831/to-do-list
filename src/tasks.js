@@ -24,9 +24,38 @@ class Task {
         console.log(this.name, this.dueDate, this.desc, this.priority, this.assocProj)
     }
 }
-
-export let taskList = [];
+export let taskList;
+const displayNumAllTasks = document.getElementById('num-all-tasks');
 let numAllTasks = 0;
+let numDueToday = 0;
+let numDueThisWeek = 0;
+let numDueThisMonth = 0;
+let todayList = [];
+let thisWeekList = [];
+let thisMonthList = [];
+
+
+function getLocalStorageTasks() {
+    const savedInLocalStorage = localStorage.getItem('taskList');
+    if (savedInLocalStorage) {
+        taskList = JSON.parse(savedInLocalStorage);
+        return taskList;
+    } else {
+        return;
+    }
+}
+
+export function loadLocalStorageTasks() {
+    const savedInLocalStorage = localStorage.getItem('taskList');
+    if (savedInLocalStorage) {
+        taskList = JSON.parse(savedInLocalStorage);
+        console.log("here is the tasklist from JSON file");
+        console.log(taskList);
+        updateAllTasksFromStorage(taskList);
+    } else {
+        taskList = [];
+    }
+}
 
 export function saveTask() {
     let taskName = document.getElementById('task-name').value;
@@ -35,11 +64,11 @@ export function saveTask() {
     let taskPriority = document.getElementById('task-priority').value;
     let taskProject = document.getElementById('task-project').value;
     let error = false;
+    let taskNumber = 0;
     
     createTask();
 
     function createTask() {
-        const displayNumAllTasks = document.getElementById('num-all-tasks');
         const errorName = document.getElementById('error-name');
         const errorDate = document.getElementById('error-date');
 
@@ -67,6 +96,7 @@ export function saveTask() {
         function submitTask() {
             let task = new Task(taskName, taskDate, taskDesc, taskPriority, taskProject);
             taskList.push(task);
+            localStorage.setItem('taskList', JSON.stringify(taskList));
             console.log(taskList);
             displaySuccessfulAlert();
             let addTasks = ++numAllTasks;
@@ -77,6 +107,14 @@ export function saveTask() {
         }
     }                
 };
+
+function updateAllTasksFromStorage(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        let addTasks = ++numAllTasks;
+        displayNumAllTasks.textContent = addTasks;
+        displayTasks(arr[i]);
+    }
+}
 
 function displaySuccessfulAlert() {
     const container = document.getElementById('task-form-container');
@@ -109,10 +147,6 @@ export function clearForm() {
     })
 };
 
-let numDueToday = 0;
-let numDueThisWeek = 0;
-let numDueThisMonth = 0;
-
 function displayTasks(taskInput) {
     console.log(taskInput);
 
@@ -137,13 +171,9 @@ function displayTasks(taskInput) {
     addToThisMonthList(today, taskDate, displayNumDueThisMonth, taskInput);
 };
 
-let todayList = [];
-let thisWeekList = [];
-let thisMonthList = [];
-
 function isItDueToday(dateA, dateB) {
     return (compareAsc(dateA, dateB) === 0);
-}
+};
 
 function addToTodayList(dateA, dateB, display, taskInput) {
     if (isItDueToday(dateA, dateB) === true) {
@@ -222,7 +252,7 @@ export function displayThisWeekList() {
 
 function isItDueThisMonth(dateA, dateB) {
     return (isSameMonth(dateA, dateB));
-}
+};
 
 function addToThisMonthList(dateA, dateB, display, taskInput) {
     if (isItDueThisMonth(dateA, dateB) === true) {
@@ -403,7 +433,21 @@ function markTaskCompleted() {
                 if (isItDueThisMonth(today, taskDate) === true) {
                     removeFromThisMonthList();
                 }
+                removeTaskFromLocalStorage(selectedTaskName);
         })
+    }
+};
+
+function removeTaskFromLocalStorage(tName) {
+    const removedT = tName;
+    console.log(`the tname is ${removedT}`);
+    let tasks = getLocalStorageTasks();
+    for (let i = 0; i < taskList.length; i++) {
+        if (tasks[i].name === removedT) {
+            tasks.splice(i, 1);
+            localStorage.setItem('taskList', JSON.stringify(taskList));
+            break;
+        }
     }
 };
 
@@ -612,7 +656,7 @@ function updateTaskInfo(t) {
     let newTaskDate = document.getElementById('task-date').value;
     let newTaskDesc = document.getElementById('task-desc').value;
     let newTaskPriority = document.getElementById('task-priority').value;
-    let newTaskProject = document.getElementById('task-project').value;0
+    let newTaskProject = document.getElementById('task-project').value;
     let error = false;
 
     console.log(`the new task name is ${newTaskName} and date is ${newTaskDate}`);
@@ -639,6 +683,38 @@ function updateTaskInfo(t) {
 
     if (oldTaskDate !== newTaskDate) {
         taskList[index].dueDate = newTaskDate;
+        let today = new Date();
+        let todayDay = +today.getDate();
+        let todayMonth = +today.getMonth();
+        let todayYear = +today.getFullYear();
+        today = new Date(todayYear, todayMonth, todayDay);
+        let newTask = {
+            dueDate: newTaskDate,
+            name: newTaskName,
+            desc: newTaskDesc,
+            priority: newTaskPriority,
+            proj: newTaskProject
+        }
+        
+        let newDate = oldTaskDate.split('-');
+        let dueDay = +newDate[2];
+        let dueMonth = newDate[1]-1;
+        let dueYear = +newDate[0];
+        let taskDate = new Date(dueYear, dueMonth, dueDay);
+
+        if (isItDueToday(today, taskDate) === true) {
+            removeFromTodayList();
+        }
+
+        if (isItDueThisWeek(today, taskDate) === true) {
+            removeFromThisWeekList();
+        }
+
+        if (isItDueThisMonth(today, taskDate) === true) {
+            removeFromThisMonthList();
+        }
+
+        displayTasks(newTask);
     }
 
     if (oldTaskName !== newTaskName) {
