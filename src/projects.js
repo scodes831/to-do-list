@@ -5,7 +5,6 @@ import { closeSuccessfulAlert,
         displayTaskTableByProjectName } from './tasks';
 
 import greenCheckmarkImage from './images/icons/green-checkmark.png';
-import trashBinImage from './images/icons/trash-bin.png';
 
 class Project {
     constructor(name, deadline, desc) {
@@ -15,16 +14,41 @@ class Project {
     }
 }
 
-let projectList = [];
+let projectList;
 let numAllProjects = 0;
+
+function getLocalStorageProjects() {
+    const savedInLocalStorage = localStorage.getItem('projectList');
+    if (savedInLocalStorage) {
+        projectList = JSON.parse(savedInLocalStorage);
+        return projectList;
+    } else {
+        return;
+    }
+}
+
+export function loadLocalStorageProjects() {
+    const savedInLocalStorage = localStorage.getItem('projectList');
+    if (savedInLocalStorage) {
+        projectList = JSON.parse(savedInLocalStorage);
+        updateAllProjectsFromStorage(projectList);
+    } else {
+        projectList = [];
+    }
+}
+
+function updateAllProjectsFromStorage(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        let addProjects = ++numAllProjects;
+        const displayNumAllProjects = document.querySelector('#num-my-projects');
+        displayNumAllProjects.textContent = addProjects;
+    }
+}
 
 export function saveProject() {
     let projName = document.getElementById('project-name').value;
     let projDeadline = document.getElementById('project-deadline').value;
     let projDesc = document.getElementById('project-desc').value;
-    console.log("the project name is " + projName);
-    console.log("the deadline is " + projDeadline);
-    console.log("the desc is " + projDesc);
 
     createProject();
 
@@ -36,7 +60,7 @@ export function saveProject() {
         } else {
             let project = new Project(projName, projDeadline, projDesc);
             projectList.push(project);
-            console.log(projectList);
+            localStorage.setItem('projectList', JSON.stringify(projectList));
             displaySuccessfulAlert();
             let addProject = ++numAllProjects;
             displayNumAllProjects.textContent = addProject;
@@ -47,12 +71,9 @@ export function saveProject() {
 };
 
 export function addProjectToTaskForm() {
-    console.log("the project list is " + projectList);
     const container = document.getElementById('task-project');
-
     for (let i = 0; i < projectList.length; i++) {
         let projectName = projectList[i].name;
-
         let taskFormProjectOption = document.createElement('option');
         taskFormProjectOption.setAttribute('value', projectName);
         taskFormProjectOption.textContent = projectName;
@@ -62,7 +83,6 @@ export function addProjectToTaskForm() {
 
 function displaySuccessfulAlert() {
     const container = document.getElementById('project-form-container');
-
     const modalContainer = document.createElement('div');
     modalContainer.setAttribute('id', 'modal-container');
     container.appendChild(modalContainer);
@@ -148,25 +168,17 @@ function showTasksByProjectName(a) {
     const rows = projectsTable.getElementsByTagName('tr');
         for (let i = 1; i < rows.length; i++) {
             rows[i].addEventListener('click', () => {
-                console.log("row clicked");
-                console.log(rows[i].children[1].textContent);
-                console.log(a);
                 let project = rows[i].children[1].textContent;
-                console.log("the project name is " + project);
                 let projectArr = [];
                 for (let i = 0; i< a.length; i++) {
                     if (a[i].assocProj === project) {
-                        console.log(a[i].assocProj);
-                        console.log(project);
                         projectArr.push(a[i]);
                     }
-                    console.log(projectArr);
                 }
                 removeProjectTable();
                 displayTaskTableByProjectName(projectArr);
             })
         }
-
 }
 
 export function removeProjectTable() {
