@@ -248,5 +248,12 @@ tr td:last-child {
     z-index: 3;
 }
 
+.error {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 4px;
+    display: none;
+}
+
 
 
