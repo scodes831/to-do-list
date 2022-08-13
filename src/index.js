@@ -3,17 +3,18 @@ require('./style.css');
 import { saveProject, 
         displayProjectsList, 
         removeProjectTable, 
-        addProjectToTaskForm } from './projects';
+        addProjectToTaskForm, 
+        loadLocalStorageProjects} from './projects';
 
 import { saveTask, 
         clearForm, 
-        removeTaskDiv,
         removeTaskTable,
         displayAllTasksList,
         displayThisMonthList, 
         displayThisWeekList, 
         displayTodayList, 
-        checkUniqueTaskName} from './tasks';
+        checkUniqueTaskName, 
+        loadLocalStorageTasks} from './tasks';
 
 const addTaskBtn = document.getElementById('add-task');
 const addProjectBtn = document.getElementById('add-project');
@@ -30,6 +31,9 @@ const tasksTableContainer = document.getElementById('new-task-container');
 
 export let userClicks = ["home"];
 
+loadLocalStorageTasks();
+loadLocalStorageProjects();
+
 addTaskBtn.addEventListener('click', () => {
     removeNewDivs();
     addTaskForm();
@@ -45,9 +49,6 @@ navLinks.forEach(link => {
         let nextPage = e.target.id;
         userClicks.push(nextPage);
         let previousPage = userClicks[(userClicks.length-2)];
-        console.log("the next page is " + nextPage);
-        console.log("the previous page was " + previousPage);
-        console.log(userClicks);
         if (previousPage === "home") {
             removeTaskFormContainer();
             removeProjectFormContainer();
@@ -59,13 +60,10 @@ navLinks.forEach(link => {
         }    
 
         if (e.target.id === "due-today") {
-            console.log("display tasks due today");
             displayTodayList();
         } else if (e.target.id === "due-this-week") {
-            console.log("display tasks due this week");
             displayThisWeekList();
         } else if (e.target.id === "due-this-month") {
-            console.log("display tasks due this month");
             displayThisMonthList();
         } else if (e.target.id === "all-tasks") {
             displayAllTasksList();
@@ -95,7 +93,6 @@ export function removeTaskFormContainer() {
     } else {
         console.log("task form container does NOT exist");
     }
-    
 };
 
 function removeProjectFormContainer() {
