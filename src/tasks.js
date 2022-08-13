@@ -49,8 +49,6 @@ export function loadLocalStorageTasks() {
     const savedInLocalStorage = localStorage.getItem('taskList');
     if (savedInLocalStorage) {
         taskList = JSON.parse(savedInLocalStorage);
-        console.log("here is the tasklist from JSON file");
-        console.log(taskList);
         updateAllTasksFromStorage(taskList);
     } else {
         taskList = [];
@@ -99,8 +97,7 @@ export function saveTask() {
             localStorage.setItem('taskList', JSON.stringify(taskList));
             console.log(taskList);
             displaySuccessfulAlert();
-            let addTasks = ++numAllTasks;
-            displayNumAllTasks.textContent = addTasks;
+            displayNumAllTasks.textContent = taskList.length;
             displayTasks(task);
             clearForm();
             setTimeout(closeSuccessfulAlert, 1500);
@@ -109,9 +106,8 @@ export function saveTask() {
 };
 
 function updateAllTasksFromStorage(arr) {
+    displayNumAllTasks.textContent = arr.length;
     for (let i = 0; i < arr.length; i++) {
-        let addTasks = ++numAllTasks;
-        displayNumAllTasks.textContent = addTasks;
         displayTasks(arr[i]);
     }
 }
@@ -148,8 +144,6 @@ export function clearForm() {
 };
 
 function displayTasks(taskInput) {
-    console.log(taskInput);
-
     const displayNumDueToday = document.getElementById('num-due-today');
     const displayNumDueThisWeek = document.getElementById('num-due-this-week');
     const displayNumDueThisMonth = document.getElementById('num-due-this-month');
@@ -177,10 +171,8 @@ function isItDueToday(dateA, dateB) {
 
 function addToTodayList(dateA, dateB, display, taskInput) {
     if (isItDueToday(dateA, dateB) === true) {
-        let addToday = ++numDueToday;
-        display.textContent = addToday;
         todayList.push(taskInput)
-        console.log(todayList);
+        display.textContent = todayList.length;
     } 
 };
 
@@ -190,10 +182,8 @@ function removeFromAllTasks(selectedTaskName) {
     })
 
     const displayNumAllTasks = document.getElementById('num-all-tasks');
-    let updated = --numAllTasks;
-    console.log("the new task count is " + updated);
-    displayNumAllTasks.textContent = updated;
     taskList.splice(indexOfSelected, 1);
+    displayNumAllTasks.textContent = taskList.length;
 };
 
 function removeFromTodayList(selectedTaskName) {
@@ -202,9 +192,8 @@ function removeFromTodayList(selectedTaskName) {
     })
 
     const displayNumDueToday = document.getElementById('num-due-today');
-    let updated = --numDueToday;
-    displayNumDueToday.textContent = updated;
     todayList.splice(indexOfSelected, 1);
+    displayNumDueToday.textContent = todayList.length;
 };
 
 function removeFromThisWeekList(selectedTaskName) {
@@ -213,9 +202,8 @@ function removeFromThisWeekList(selectedTaskName) {
     })
 
     const displayNumDueThisWeek = document.getElementById('num-due-this-week');
-    let updated = --numDueThisWeek;
-    displayNumDueThisWeek.textContent = updated;
     thisWeekList.splice(indexOfSelected, 1);
+    displayNumDueThisWeek.textContent = thisWeekList.length;
 };
 
 function removeFromThisMonthList(selectedTaskName) {
@@ -224,9 +212,8 @@ function removeFromThisMonthList(selectedTaskName) {
     })
 
     const displayNumDueThisMonth = document.getElementById('num-due-this-month');
-    let updated = --numDueThisMonth;
-    displayNumDueThisMonth.textContent = updated;
     thisMonthList.splice(indexOfSelected, 1);
+    displayNumDueThisMonth.textContent = thisMonthList.length;
 };
 
 export function displayTodayList() {
@@ -239,9 +226,8 @@ function isItDueThisWeek(dateA, dateB) {
 
 function addToThisWeekList(dateA, dateB, display, taskInput) {
     if (isItDueThisWeek(dateA, dateB) === true) {
-        let addWeek = ++numDueThisWeek;
-        display.textContent = addWeek;
         thisWeekList.push(taskInput);
+        display.textContent = thisWeekList.length;
         console.log(thisWeekList);
     }
 };
@@ -256,9 +242,8 @@ function isItDueThisMonth(dateA, dateB) {
 
 function addToThisMonthList(dateA, dateB, display, taskInput) {
     if (isItDueThisMonth(dateA, dateB) === true) {
-        let addMonth = ++numDueThisMonth;
-        display.textContent = addMonth;
         thisMonthList.push(taskInput);
+        display.textContent = thisMonthList.length;
         console.log(thisMonthList);
     }
 };
@@ -277,7 +262,6 @@ export function displayTaskTableByProjectName(a) {
 
 export function displayTasksbyProjectName(project) {
     let projectTasks = taskList.filter(forThisProject);
-
     function forThisProject() {
         for (let i = 0; i < taskList.length; i++) {
             if (taskList[i].projName === project) {
@@ -380,13 +364,10 @@ function createTaskTable(a) {
             priorityCellIcon.alt = "low priority";
             priorityCellIcon.classList.add('low');
         }
-
         priorityCell.appendChild(priorityCellIcon);
-        
         let projCell = document.createElement('td');
         projCell.textContent = a[i].assocProj;
         newRow.appendChild(projCell);
-
         markTaskCompleted();
         editExistingTask();
     }
@@ -399,16 +380,24 @@ export function removeTaskTable() {
 
 function markTaskCompleted() {
     const completeBtns = document.querySelectorAll('.complete-button');
+    const completeBtnsArr = Array.from(completeBtns);
     let today = new Date();
     let todayDay = +today.getDate();
     let todayMonth = +today.getMonth();
     let todayYear = +today.getFullYear();
     today = new Date(todayYear, todayMonth, todayDay);
-    for (let i = 0; i < completeBtns.length; i++) {
-        completeBtns[i].addEventListener('click', function(e) {
+
+    for (let i = 0; i < completeBtnsArr.length; i++) {
+        completeBtnsArr[i].addEventListener('click', function(e) {
             e.stopPropagation();
-                completeBtns[i].classList.add("clicked");
+            console.log(completeBtnsArr.classList);
+            console.log('beginning of new loop');
+            completeBtnsArr[i].classList.add("clicked");
+            if (completeBtnsArr[i].classList.contains('clicked')) {
                 let selection = e.target;
+                console.log(selection);
+                console.log(`the selection is ${selection}`);
+                console.log(`i is ${i}`);
                 let siblings = selection.parentElement.parentElement.children;
                 let row = selection.parentElement.parentElement;
                 console.log(`the row is ${row}`);
@@ -423,24 +412,28 @@ function markTaskCompleted() {
                 taskDate = new Date(dueYear, dueMonth, dueDay);
 
                 if (isItDueToday(today, taskDate) === true) {
-                    removeFromTodayList();
+                        removeFromTodayList();
                 }
 
                 if (isItDueThisWeek(today, taskDate) === true) {
-                    removeFromThisWeekList();
+                        removeFromThisWeekList();
                 }
 
                 if (isItDueThisMonth(today, taskDate) === true) {
-                    removeFromThisMonthList();
-                }
+                        removeFromThisMonthList();
+                } 
+
                 removeTaskFromLocalStorage(selectedTaskName);
+            
+            } else {
+                return;
+            }
         })
     }
 };
 
 function removeTaskFromLocalStorage(tName) {
     const removedT = tName;
-    console.log(`the tname is ${removedT}`);
     let tasks = getLocalStorageTasks();
     for (let i = 0; i < taskList.length; i++) {
         if (tasks[i].name === removedT) {
@@ -477,7 +470,6 @@ function editExistingTask() {
 };
 
 function showOverlay() {
-    console.log("i'm adding the overlay!");
     const overlay = document.createElement('div');
     overlay.setAttribute('id', 'overlay');
     document.body.appendChild(overlay);
@@ -489,11 +481,6 @@ function hideOverlay() {
 };
 
 function showEditWindow(oldDate, oldName, oldDesc, oldPriority, oldProj) {
-    console.log("the date is " + oldDate);
-    console.log("the name is " + oldName);
-    console.log("the desc is " + oldDesc);
-    console.log("the priority is " + oldPriority);
-    console.log("the proj is " + oldProj);
     const container = document.getElementById('content-container');
     const editWindow = document.createElement('div');
     editWindow.setAttribute('id', 'task-form-container');
@@ -622,7 +609,6 @@ function showEditWindow(oldDate, oldName, oldDesc, oldPriority, oldProj) {
         } else {
             e.preventDefault();
         }
-        
     })
 };
 
@@ -632,7 +618,6 @@ export function checkUniqueTaskName(input) {
         console.log(event.target.value);
         let newVal = event.target.value;
         let alreadyExists = taskList.some((task) => task.name === newVal);
-        console.log(alreadyExists);
         if(alreadyExists === true) {
             errorName.style.display = "block";
             errorName.textContent = "Task name already exists";
@@ -643,23 +628,17 @@ export function checkUniqueTaskName(input) {
 }
 
 function updateTaskInfo(t) {
-    console.log("start update task info function");
-    console.log(taskList);
-    
     let oldTaskDate = t[0];
     let oldTaskName = t[1];
     let oldTaskDesc = t[2];
     let oldTaskPriority = t[3];
     let oldTaskProj = t[4];
-
     let newTaskName = document.getElementById('task-name').value;
     let newTaskDate = document.getElementById('task-date').value;
     let newTaskDesc = document.getElementById('task-desc').value;
     let newTaskPriority = document.getElementById('task-priority').value;
     let newTaskProject = document.getElementById('task-project').value;
     let error = false;
-
-    console.log(`the new task name is ${newTaskName} and date is ${newTaskDate}`);
 
     const index = taskList.findIndex(function(x, index) {
         return x.name === oldTaskName;
@@ -670,7 +649,6 @@ function updateTaskInfo(t) {
         errorName.style.display = "block";
         errorName.textContent = "You must enter a task name.";
         return showEditWindow(oldTaskDate, oldTaskName, oldTaskDesc, oldTaskPriority, oldTaskProj);
-        
     }
     if (newTaskDate === "") {
         const errorDate = document.getElementById('error-date');
@@ -678,9 +656,6 @@ function updateTaskInfo(t) {
         errorDate.textContent = "You must enter a due date.";
         return showEditWindow(oldTaskDate, oldTaskName, oldTaskDesc, oldTaskPriority, oldTaskProj);
     }
-
-    console.log("stop if blank");
-
     if (oldTaskDate !== newTaskDate) {
         taskList[index].dueDate = newTaskDate;
         let today = new Date();
@@ -719,6 +694,7 @@ function updateTaskInfo(t) {
 
     if (oldTaskName !== newTaskName) {
         taskList[index].name = newTaskName;
+
     } 
 
     if (oldTaskDesc !== newTaskDesc) {
@@ -731,6 +707,7 @@ function updateTaskInfo(t) {
         taskList[index].assocProj = newTaskProject;
     } 
 
+    localStorage.setItem('taskList', JSON.stringify(taskList));
     reloadPreviousPage();
 };
 
