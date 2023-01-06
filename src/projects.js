@@ -1,27 +1,54 @@
 import { closeSuccessfulAlert, 
-        clearForm } from './tasks';
+        clearForm, 
+        displayTasksbyProjectName,
+        taskList,
+        displayTaskTableByProjectName } from './tasks';
 
 import greenCheckmarkImage from './images/icons/green-checkmark.png';
-import trashBinImage from './images/icons/trash-bin.png';
 
 class Project {
-    constructor(name, deadline, desc, priority) {
+    constructor(name, deadline, desc) {
         this.name = name,
         this.deadline = deadline,
         this.desc = desc
     }
 }
 
-let projectList = [];
+let projectList;
 let numAllProjects = 0;
+
+function getLocalStorageProjects() {
+    const savedInLocalStorage = localStorage.getItem('projectList');
+    if (savedInLocalStorage) {
+        projectList = JSON.parse(savedInLocalStorage);
+        return projectList;
+    } else {
+        return;
+    }
+}
+
+export function loadLocalStorageProjects() {
+    const savedInLocalStorage = localStorage.getItem('projectList');
+    if (savedInLocalStorage) {
+        projectList = JSON.parse(savedInLocalStorage);
+        updateAllProjectsFromStorage(projectList);
+    } else {
+        projectList = [];
+    }
+}
+
+function updateAllProjectsFromStorage(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        let addProjects = ++numAllProjects;
+        const displayNumAllProjects = document.querySelector('#num-my-projects');
+        displayNumAllProjects.textContent = addProjects;
+    }
+}
 
 export function saveProject() {
     let projName = document.getElementById('project-name').value;
     let projDeadline = document.getElementById('project-deadline').value;
     let projDesc = document.getElementById('project-desc').value;
-    console.log("the project name is " + projName);
-    console.log("the deadline is " + projDeadline);
-    console.log("the desc is " + projDesc);
 
     createProject();
 
@@ -33,7 +60,7 @@ export function saveProject() {
         } else {
             let project = new Project(projName, projDeadline, projDesc);
             projectList.push(project);
-            console.log(projectList);
+            localStorage.setItem('projectList', JSON.stringify(projectList));
             displaySuccessfulAlert();
             let addProject = ++numAllProjects;
             displayNumAllProjects.textContent = addProject;
@@ -44,12 +71,9 @@ export function saveProject() {
 };
 
 export function addProjectToTaskForm() {
-    console.log("the project list is " + projectList);
     const container = document.getElementById('task-project');
-
     for (let i = 0; i < projectList.length; i++) {
         let projectName = projectList[i].name;
-
         let taskFormProjectOption = document.createElement('option');
         taskFormProjectOption.setAttribute('value', projectName);
         taskFormProjectOption.textContent = projectName;
@@ -59,7 +83,6 @@ export function addProjectToTaskForm() {
 
 function displaySuccessfulAlert() {
     const container = document.getElementById('project-form-container');
-
     const modalContainer = document.createElement('div');
     modalContainer.setAttribute('id', 'modal-container');
     container.appendChild(modalContainer);
@@ -97,9 +120,6 @@ function createProjectTable(a) {
     const headRow = document.createElement('tr');
     tableHead.appendChild(headRow);
 
-    const completedHeading = document.createElement('th');
-    headRow.appendChild(completedHeading);
-
     const deadlineHeading = document.createElement('th');
     deadlineHeading.classList.add('heading');
     deadlineHeading.textContent = "Deadline";
@@ -124,48 +144,55 @@ function createProjectTable(a) {
     for (let i = 0; i < a.length; i++) {        
         let newRow = document.createElement('tr');
         tableBody.appendChild(newRow);
-
-        let markCompletedCell = document.createElement('td');
-        newRow.appendChild(markCompletedCell);
-
-        let markCompletedInput = document.createElement('input');
-        markCompletedInput.setAttribute('type', 'checkbox');
-        markCompletedCell.appendChild(markCompletedInput);
-
+        
         let deadlineCell = document.createElement('td');
         deadlineCell.textContent = a[i].deadline;
         newRow.appendChild(deadlineCell);
 
         let nameCell = document.createElement('td');
         nameCell.textContent = a[i].name;
+        let pName = a[i].name;
         newRow.appendChild(nameCell);
+        nameCell.addEventListener('click', displayTasksbyProjectName(pName));
 
         let descCell = document.createElement('td');
         descCell.textContent = a[i].desc;
         newRow.appendChild(descCell);
 
-        let deleteIconCell = document.createElement('td');
-        newRow.appendChild(deleteIconCell);
-
-        let deleteButton = document.createElement('input');
-        deleteButton.setAttribute('type', 'image');
-        deleteButton.setAttribute('name', 'delete-button');
-        deleteButton.classList.add('delete-task');
-        deleteButton.src = trashBinImage;
-        deleteButton.alt = "delete";
-        deleteIconCell.appendChild(deleteButton);
-
-        // let deleteIcon = document.createElement('img');
-        // deleteIcon.classList.add('delete-task')
-        // deleteIcon.src = trashBinImage;
-        // deleteIcon.alt = "Remove task";
-        // deleteIconCell.appendChild(deleteIcon);
+        showTasksByProjectName(taskList);
     }  
 };
 
+function showTasksByProjectName(a) {
+    const projectsTable = document.getElementById('projects-table');
+    const rows = projectsTable.getElementsByTagName('tr');
+        for (let i = 1; i < rows.length; i++) {
+            rows[i].addEventListener('click', () => {
+                let project = rows[i].children[1].textContent;
+                let projectArr = [];
+                for (let i = 0; i< a.length; i++) {
+                    if (a[i].assocProj === project) {
+                        projectArr.push(a[i]);
+                    }
+                }
+                removeProjectTable();
+                displayTaskTableByProjectName(projectArr);
+            })
+        }
+}
+
 export function removeProjectTable() {
+    const doesProjTableExist = !!document.getElementById('new-project-container');
+    const doesTaskTableExist = !!document.getElementById('new-task-container');
     const projectTable = document.getElementById('new-project-container');
-    projectTable.remove();
+    const tasksTable = document.getElementById('new-task-container');
+    
+    if (doesProjTableExist === true) {
+        projectTable.remove();
+    }
+    if (doesTaskTableExist === true) {
+        tasksTable.remove();
+    }
 };
 
 

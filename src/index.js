@@ -3,16 +3,18 @@ require('./style.css');
 import { saveProject, 
         displayProjectsList, 
         removeProjectTable, 
-        addProjectToTaskForm } from './projects';
+        addProjectToTaskForm, 
+        loadLocalStorageProjects} from './projects';
 
 import { saveTask, 
         clearForm, 
-        removeTaskDiv,
         removeTaskTable,
         displayAllTasksList,
         displayThisMonthList, 
         displayThisWeekList, 
-        displayTodayList, } from './tasks';
+        displayTodayList, 
+        checkUniqueTaskName, 
+        loadLocalStorageTasks} from './tasks';
 
 const addTaskBtn = document.getElementById('add-task');
 const addProjectBtn = document.getElementById('add-project');
@@ -29,6 +31,9 @@ const tasksTableContainer = document.getElementById('new-task-container');
 
 export let userClicks = ["home"];
 
+loadLocalStorageTasks();
+loadLocalStorageProjects();
+
 addTaskBtn.addEventListener('click', () => {
     removeNewDivs();
     addTaskForm();
@@ -44,9 +49,6 @@ navLinks.forEach(link => {
         let nextPage = e.target.id;
         userClicks.push(nextPage);
         let previousPage = userClicks[(userClicks.length-2)];
-        console.log("the next page is " + nextPage);
-        console.log("the previous page was " + previousPage);
-        console.log(userClicks);
         if (previousPage === "home") {
             removeTaskFormContainer();
             removeProjectFormContainer();
@@ -58,13 +60,10 @@ navLinks.forEach(link => {
         }    
 
         if (e.target.id === "due-today") {
-            console.log("display tasks due today");
             displayTodayList();
         } else if (e.target.id === "due-this-week") {
-            console.log("display tasks due this week");
             displayThisWeekList();
         } else if (e.target.id === "due-this-month") {
-            console.log("display tasks due this month");
             displayThisMonthList();
         } else if (e.target.id === "all-tasks") {
             displayAllTasksList();
@@ -94,7 +93,6 @@ export function removeTaskFormContainer() {
     } else {
         console.log("task form container does NOT exist");
     }
-    
 };
 
 function removeProjectFormContainer() {
@@ -206,6 +204,11 @@ function addTaskForm() {
     taskFormNameInput.setAttribute('name', 'task-name');
     taskForm.appendChild(taskFormNameInput);
 
+    const errorName = document.createElement('p');
+    errorName.setAttribute('id', 'error-name');
+    errorName.classList.add('error');
+    taskForm.appendChild(errorName);
+
     const taskFormDatelabel = document.createElement('label');
     taskFormDatelabel.setAttribute('for', 'task-date');
     taskFormDatelabel.textContent = "Due Date:";
@@ -216,6 +219,11 @@ function addTaskForm() {
     taskFormDateInput.setAttribute('type', 'date');
     taskFormDateInput.setAttribute('name', 'task-date');
     taskForm.appendChild(taskFormDateInput);
+
+    const errorDate = document.createElement('p');
+    errorDate.setAttribute('id', 'error-date');
+    errorDate.classList.add('error');
+    taskForm.appendChild(errorDate);
 
     const taskFormDescLabel = document.createElement('label');
     taskFormDescLabel.setAttribute('for', 'task-desc');
@@ -270,6 +278,8 @@ function addTaskForm() {
     defaultTaskFormProjectOption.textContent = "Tasks";
     taskFormProjectInput.appendChild(defaultTaskFormProjectOption);
 
+    checkUniqueTaskName(taskFormNameInput);
+
     const taskBtnContainer = document.createElement('div');
     taskBtnContainer.setAttribute('id', 'task-button-container');
     taskForm.appendChild(taskBtnContainer);
@@ -280,7 +290,13 @@ function addTaskForm() {
     taskSubmitBtn.textContent = "Submit";
     taskBtnContainer.appendChild(taskSubmitBtn);
     taskSubmitBtn.addEventListener('click', () => {
-        saveTask();
+        const errorNameStatus = window.getComputedStyle(errorName).display;
+        const errorDateStatus = window.getComputedStyle(errorDate).display;
+        if (errorNameStatus === 'none' && errorDateStatus === 'none') {
+            saveTask();
+        } else {
+            e.preventDefault();
+        }
     });
 
     const taskCancelBtn = document.createElement('button');
@@ -292,6 +308,7 @@ function addTaskForm() {
         removeTaskForm(taskFormContainer);
         displayNewDivs();
         console.log("it worked");
+
     });
 };
 
